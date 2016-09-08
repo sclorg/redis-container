@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# setup config file
+mv /etc/opt/rh/rh-redis32/redis.conf /etc/redis.conf
+ln -s /etc/redis.conf /etc/opt/rh/rh-redis32/redis.conf
+
+# setup directory for data
+mkdir -p /var/lib/redis
+chown -R redis:0 /var/lib/redis /etc/redis.conf
+restorecon -R /var/lib/redis /etc/redis.conf
+
+# Loosen permission bits for group to avoid problems running container with
+# arbitrary UID
+# When only specifying user, group is 0, that's why /var/lib/redis must have
+# owner redis.0; that allows to avoid a+rwx for this dir
+chmod g+w -R /var/lib/redis /etc/redis.conf
+
