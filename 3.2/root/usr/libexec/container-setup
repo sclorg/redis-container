@@ -11,6 +11,10 @@ ln -s /etc/redis.conf /etc/opt/rh/rh-redis32/redis.conf
 chown -R redis:0 "${HOME}" /etc/redis.conf
 restorecon -R "${HOME}" /etc/redis.conf
 
+# create a symlink for SCL datadir, so there is some reasonable content there
+rmdir /var/opt/rh/rh-redis32/lib/redis/
+ln -s /var/lib/redis /var/opt/rh/rh-redis32/lib/redis
+
 # Loosen permission bits for group to avoid problems running container with
 # arbitrary UID
 # When only specifying user, group is 0, that's why /var/lib/redis must have
