@@ -10,9 +10,13 @@ Dockerfile.rhel7.
 Environment variables and volumes
 ----------------------------------
 
+|    Variable name       |    Description                            |
+| :--------------------- | ----------------------------------------- |
+|  `REDIS_PASSWORD`      | Password for the server access            |
+
 TBD
 
-You can also set the following mount points by passing the `-v /host:/container` flag to Docker.
+You can also set the following mount points by passing the `-v /host:/container:Z` flag to Docker.
 
 |  Volume mount point      | Description          |
 | :----------------------- | -------------------- |
@@ -34,7 +38,18 @@ $ docker run -d --name redis_database 6379:6379 rhscl/redis-32-rhel7
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
-to the host. If you want your database to be persistent across container executions,
-also add a `-v /host/db/path:/var/lib/redis` argument. This will be the Redis
-data directory.
+to the host.
 
+If you want your database to be persistent across container executions, also add a
+`-v /host/db/path:/var/lib/redis/data:Z` argument. This will be the Redis data directory.
+
+For protecting Redis data by a password, pass `REDIS_PASSWORD` environment variable
+to the container like this:
+
+```
+$ docker run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhscl/redis-32-rhel7
+```
+
+**Warning: since Redis is pretty fast an outside user can try up to
+150k passwords per second against a good box. This means that you should
+use a very strong password otherwise it will be very easy to break.**

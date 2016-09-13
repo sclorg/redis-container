@@ -120,13 +120,13 @@ function run_change_password_test() {
 
   # Create Redis container with persistent volume and set the initial password
   create_container "testpass1" -e REDIS_PASSWORD=foo \
-    -e REDIS_DATABASE=db -v ${tmpdir}:/var/lib/redis:Z
+    -v ${tmpdir}:/var/lib/redis/data:Z
   test_connection testpass1 foo
   docker stop $(get_cid testpass1) >/dev/null
 
   # Create second container with changed password
   create_container "testpass2" -e REDIS_PASSWORD=bar \
-    -e REDIS_DATABASE=db -v ${tmpdir}:/var/lib/redis:Z
+    -v ${tmpdir}:/var/lib/redis/data:Z
   test_connection testpass2 bar
 
   # The old password should not work anymore
