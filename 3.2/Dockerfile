@@ -1,9 +1,9 @@
 FROM centos:centos7
 
-# Redis image for OpenShift.
+# Redis image based on Software Collections packages
 #
 # Volumes:
-#  * /var/lib/redis - Datastore for Redis
+#  * /var/lib/redis/data - Datastore for Redis
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
@@ -35,7 +35,7 @@ RUN yum install -y yum-utils gettext && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS --nogpgcheck && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
-    mkdir -p /var/lib/redis && chown -R redis.0 /var/lib/redis
+    mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/redis \
@@ -56,7 +56,7 @@ ADD root /
 # script.
 RUN /usr/libexec/container-setup
 
-VOLUME ["/var/lib/redis"]
+VOLUME ["/var/lib/redis/data"]
 
 USER 1001
 

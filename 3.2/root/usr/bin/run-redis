@@ -22,6 +22,6 @@ fi
 
 # Restart the Redis server with public IP bindings
 unset_env_vars
-log_volume_info $REDIS_DATADIR
+log_volume_info "${REDIS_DATADIR}"
 log_info 'Running final exec -- Only Redis logs after this point'
 exec ${REDIS_PREFIX}/bin/redis-server /etc/redis.conf --daemonize no "$@" 2>&1

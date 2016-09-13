@@ -3,9 +3,9 @@
 source ${CONTAINER_SCRIPTS_PATH}/helpers.sh
 
 # Data directory where MySQL database files live. The data subdirectory is here
-# because .bashrc and my.cnf both live in /var/lib/mysql/ and we don't want a
+# because .bashrc lives in /var/lib/mysql/ and we don't want a
 # volume to override it.
-export REDIS_DATADIR=/var/lib/redis
+export REDIS_DATADIR=/var/lib/redis/data
 
 # Be paranoid and stricter than we should be.
 redis_password_regex='^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$'
