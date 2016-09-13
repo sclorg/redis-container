@@ -10,6 +10,8 @@ set -o errexit
 set -o nounset
 shopt -s nullglob
 
+[ "${DEBUG:-0}" -eq 1 ] && set -x
+
 IMAGE_NAME=${IMAGE_NAME-centos/redis-32-centos7-candidate}
 test_exit=1
 
@@ -110,6 +112,7 @@ function create_container() {
   cidfile="$CIDFILE_DIR/$name"
   # create container with a cidfile in a directory for cleanup
   local container_id
+  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
   container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
   echo "Created container $container_id"
 }
