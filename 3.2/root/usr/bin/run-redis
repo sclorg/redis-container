@@ -8,11 +8,9 @@ set -eu
 
 # Process the Redis configuration files
 log_info 'Processing Redis configuration files ...'
-clear_config
 if [[ -v REDIS_PASSWORD ]]; then
   envsubst < ${CONTAINER_SCRIPTS_PATH}/password.conf.template >> /etc/redis.conf
 fi
-envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> /etc/redis.conf
 
 # Source post-init source if exists
 if [ -f ${CONTAINER_SCRIPTS_PATH}/post-init.sh ]; then
