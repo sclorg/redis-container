@@ -53,3 +53,6 @@ $ docker run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhscl/red
 **Warning: since Redis is pretty fast an outside user can try up to
 150k passwords per second against a good box. This means that you should
 use a very strong password otherwise it will be very easy to break.**
+
+Limitation: This container image does not support master-slave deployment (`redis-sentinel`
+is not supported). It is meant to be used as a standalone server only.
