@@ -1,4 +1,4 @@
-FROM rhel7:7.2
+FROM rhel7
 
 # Redis image based on Software Collections packages
 #
@@ -17,11 +17,11 @@ LABEL summary="Redis in-memory data structure store, used as database, cache and
       io.openshift.tags="database,redis,redis32,rh-redis32"
 
 # Labels consumed by Red Hat build service
-LABEL BZComponent="rh-redis32-docker" \
-      Name="rhscl/redis-32-rhel7" \
-      Version="3.2" \
-      Release="1" \
-      Architecture="x86_64"
+LABEL com.redhat.component="rh-redis32-docker" \
+      name="rhscl/redis-32-rhel7" \
+      version="3.2" \
+      release="1" \
+      architecture="x86_64"
 
 EXPOSE 6379
 
@@ -36,7 +36,7 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN yum install -y yum-utils gettext && \
-    yum-config-manager --enable rhel-server-rhscl-beta-7-rpms && \
+    yum-config-manager --enable rhel-server-rhscl-7-rpms && \
     yum-config-manager --enable rhel-7-server-optional-rpms && \
     INSTALL_PKGS="rh-redis32" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
