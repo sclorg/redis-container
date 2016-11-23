@@ -2,15 +2,15 @@
 
 source ${CONTAINER_SCRIPTS_PATH}/helpers.sh
 
-# Data directory where MySQL database files live. The data subdirectory is here
-# because .bashrc lives in /var/lib/mysql/ and we don't want a
+# Data directory where Redis database files live. The data subdirectory is here
+# because .bashrc lives in /var/lib/redis/ and we don't want a
 # volume to override it.
 export REDIS_DATADIR=/var/lib/redis/data
 
 # Be paranoid and stricter than we should be.
 redis_password_regex='^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$'
 
-# Make sure env variables don't propagate to mysqld process.
+# Make sure env variables don't propagate to redis process.
 function unset_env_vars() {
   log_info 'Cleaning up environment variable REDIS_PASSWORD ...'
   unset REDIS_PASSWORD

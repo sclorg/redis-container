@@ -12,7 +12,7 @@ script_env = \
 	SKIP_SQUASH=$(SKIP_SQUASH)                      \
 	VERSIONS="$(VERSIONS)"                          \
 	OS=$(OS)                                        \
-	VERSION=$(VERSION)                              \
+	VERSION="$(VERSION)"                            \
 	BASE_IMAGE_NAME=$(BASE_IMAGE_NAME)              \
 	OPENSHIFT_NAMESPACES="$(OPENSHIFT_NAMESPACES)"
 

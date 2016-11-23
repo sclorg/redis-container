@@ -30,9 +30,9 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # to make sure of that.
 RUN yum install -y yum-utils gettext && \
     yum install -y centos-release-scl && \
-    yum-config-manager --add-repo=http://cbs.centos.org/repos/sclo7-rh-redis32-rh-candidate/x86_64/os/ && \
+    yum-config-manager --enable centos-sclo-rh-testing && \
     INSTALL_PKGS="rh-redis32" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS --nogpgcheck && \
+    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
