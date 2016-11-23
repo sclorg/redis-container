@@ -10,9 +10,10 @@ endif
 
 script_env = \
 	SKIP_SQUASH=$(SKIP_SQUASH)                      \
+	UPDATE_BASE=$(UPDATE_BASE)                      \
 	VERSIONS="$(VERSIONS)"                          \
 	OS=$(OS)                                        \
-	VERSION=$(VERSION)                              \
+	VERSION="$(VERSION)"                            \
 	BASE_IMAGE_NAME=$(BASE_IMAGE_NAME)              \
 	OPENSHIFT_NAMESPACES="$(OPENSHIFT_NAMESPACES)"
 
