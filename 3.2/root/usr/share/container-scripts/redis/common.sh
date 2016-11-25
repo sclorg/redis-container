@@ -18,8 +18,9 @@ function unset_env_vars() {
 
 # Comment out settings that we'll set in container specifically
 function clear_config() {
-  t=$(mktemp /tmp/XXXXXXXX)
-  cat /etc/redis.conf | sed -e "s/^bind/#bind/" -e "s/^logfile/#logfile/" -e "s/^dir /#dir /" >$t
-  cp $t /etc/redis.conf
-  rm -f $t
+  sed -e "s/^bind/#bind/" \
+      -e "s/^logfile/#logfile/" \
+      -e "s/^dir /#dir /" \
+      -e "/^protected-mode/s/yes/no/" \
+      -i /etc/redis.conf
 }
