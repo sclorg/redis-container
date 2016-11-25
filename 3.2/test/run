@@ -71,7 +71,8 @@ function connection_works() {
 function redis_cmd() {
   local container_ip="$1"; shift
   local password="$1"; shift
-  docker run --rm "$IMAGE_NAME" redis-cli -h "$container_ip" -a "$password" "$@"
+  # if empty password is given, then no password will be specified
+  docker run --rm "$IMAGE_NAME" redis-cli -h "$container_ip" ${password:+-a "$password"} "$@"
 }
 
 function test_connection() {
@@ -79,7 +80,7 @@ function test_connection() {
   local password=$1 ; shift
   local ip
   ip=$(get_container_ip $name)
-  echo "  Testing Redis connection to $ip..."
+  echo "  Testing Redis connection to $ip (password='${password:-}')..."
   local max_attempts=10
   local sleep_time=2
   local i
@@ -87,6 +88,7 @@ function test_connection() {
     echo "    Trying to connect..."
     if connection_works "$ip" "$password" ; then
       echo "  Success!"
+      echo
       return 0
     fi
     sleep $sleep_time
@@ -100,11 +102,12 @@ function test_redis() {
   local container_ip="$1"
   local password="$2"
 
-  echo "  Testing Redis"
-  redis_cmd "$container_ip" "$password" set a 1
-  redis_cmd "$container_ip" "$password" set b 2
+  echo "  Testing Redis (password='${password:-}')"
+  redis_cmd "$container_ip" "$password" set a 1 >/dev/null
+  redis_cmd "$container_ip" "$password" set b 2 >/dev/null
   test "$(redis_cmd "$container_ip" "$password" get b)" == '2'
   echo "  Success!"
+  echo
 }
 
 function create_container() {
@@ -114,7 +117,8 @@ function create_container() {
   local container_id
   [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
   container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
-  echo "Created container $container_id"
+  [ "${DEBUG:-0}" -eq 1 ] && echo "Created container $container_id"
+  return 0
 }
 
 function run_change_password_test() {
@@ -187,6 +191,7 @@ function run_container_creation_tests() {
   echo "  Testing image entrypoint usage"
   try_image_invalid_combinations
   echo "  Success!"
+  echo
 }
 
 test_scl_usage() {
@@ -215,7 +220,8 @@ test_scl_usage() {
 
 function run_tests() {
   local name=$1 ; shift
-  envs="-e REDIS_PASSWORD=$PASS"
+  envs=${PASS:+"-e REDIS_PASSWORD=$PASS"}
+  PASS=${PASS:-}
   create_container $name $envs
   test_connection "$name" "$PASS"
   echo "  Testing scl usage"
@@ -224,9 +230,12 @@ function run_tests() {
   local container_ip
   container_ip=$(get_container_ip $name)
   assert_login_access "$container_ip" "$PASS" true
-  assert_login_access "$container_ip" "${PASS}_foo" false
+  if [ -n "$PASS" ] ; then
+    assert_login_access "$container_ip" "${PASS}_foo" false
+  fi
   assert_local_access "$name"
   echo "  Success!"
+  echo
   test_redis "$container_ip" "$PASS"
 }
 
@@ -234,9 +243,13 @@ function run_tests() {
 
 run_container_creation_tests
 
-# Normal tests
+# Normal tests without password
+run_tests no_pass
+# Normal tests with password
 PASS=pass run_tests no_root
-# Test with arbitrary uid for the container
+# Test with arbitrary uid for the container without password
+DOCKER_ARGS="-u 12345" run_tests no_pass_altuid
+# Test with arbitrary uid for the container with password
 DOCKER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
 
 # Test the password change
