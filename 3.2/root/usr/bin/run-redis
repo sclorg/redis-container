@@ -10,6 +10,8 @@ set -eu
 log_info 'Processing Redis configuration files ...'
 if [[ -v REDIS_PASSWORD ]]; then
   envsubst < ${CONTAINER_SCRIPTS_PATH}/password.conf.template >> /etc/redis.conf
+else
+  log_info 'WARNING: setting REDIS_PASSWORD is recommended'
 fi
 
 # Source post-init source if exists
