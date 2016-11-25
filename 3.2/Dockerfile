@@ -32,7 +32,7 @@ RUN yum install -y yum-utils gettext && \
     yum install -y centos-release-scl && \
     yum-config-manager --enable centos-sclo-rh-testing && \
     INSTALL_PKGS="rh-redis32" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    yum install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
