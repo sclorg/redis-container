@@ -34,7 +34,7 @@ If you want to set only the mandatory environment variables and not store
 the database in a host directory, execute the following command:
 
 ```
-$ docker run -d --name redis_database 6379:6379 rhscl/redis-32-rhel7
+$ docker run -d --name redis_database -p 6379:6379 rhscl/redis-32-rhel7
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
