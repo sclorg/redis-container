@@ -165,7 +165,7 @@ function assert_login_access() {
 
 function assert_local_access() {
   local id="$1" ; shift
-  docker exec $(get_cid "$id") bash -c redis-cli ping
+  docker exec $(get_cid "$id") bash -c 'redis-cli ping'
 }
 
 # Make sure the invocation of docker run fails.
