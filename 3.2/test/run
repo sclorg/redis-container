@@ -218,6 +218,31 @@ test_scl_usage() {
   fi
 }
 
+run_doc_check() {
+  local tmpdir=$(mktemp -d)
+  echo "  Testing documentation in the container image"
+  # Extract the help files from the container
+  for f in help.md help.1 ; do
+    docker run --rm ${IMAGE_NAME} /bin/bash -c "cat /${f}" >${tmpdir}/${f}
+  done
+  # Check whether the files use the correct format
+  if ! file ${tmpdir}/help.1 | grep -q roff ; then
+    echo "ERROR: /help.1 is not in troff or groff format"
+    return 1
+  fi
+  # Check whether the files include some important information
+  for term in 6379 REDIS_PASSWORD volume ; do
+    for f in help.md help.1 ; do
+      if ! cat ${tmpdir}/${f} | grep -q -e "${term}" ; then
+        echo "ERROR: File /${f} does not include '${term}'."
+        return 1
+      fi
+    done
+  done
+  echo "  Success!"
+  echo
+}
+
 function run_tests() {
   local name=$1 ; shift
   envs=${PASS:+"-e REDIS_PASSWORD=$PASS"}
@@ -241,6 +266,7 @@ function run_tests() {
 
 # Tests.
 
+# Test whether documentation is part of the image
 run_container_creation_tests
 
 # Normal tests without password
@@ -254,5 +280,8 @@ DOCKER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
 
 # Test the password change
 run_change_password_test
+
+# Test whether documentation is part of the image
+run_doc_check
 
 test_exit=0

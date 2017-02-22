@@ -10,8 +10,18 @@ FROM centos:centos7
 ENV REDIS_VERSION=3.2 \
     HOME=/var/lib/redis
 
-LABEL summary="Redis in-memory data structure store, used as database, cache and message broker." \
-      io.k8s.description="Redis in-memory data structure store, used as database, cache and message broker." \
+ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
+    DESCRIPTION="Redis $REDIS_VERSION available as docker container, is an advanced key-value store. \
+It is often referred to as a data structure server since keys can contain strings, hashes, lists, \
+sets and sorted sets. You can run atomic operations on these types, like appending to a string; \
+incrementing the value in a hash; pushing to a list; computing set intersection, union and difference; \
+or getting the member with highest ranking in a sorted set. In order to achieve its outstanding \
+performance, Redis works with an in-memory dataset. Depending on your use case, you can persist \
+it either by dumping the dataset to disk every once in a while, or by appending each command to a log."
+
+LABEL summary="$SUMMARY" \
+      description="$DESCRIPTION" \
+      io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Redis 3.2" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis32,rh-redis32"
@@ -49,6 +59,7 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
+ADD README.md /help.md
 ADD root /
 
 # this is needed due to issues with squash
