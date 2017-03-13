@@ -8,7 +8,7 @@ FROM fedora:25
 #  * $REDIS_PASSWORD - Database password
 
 ENV NAME=redis \
-    VERSION=1 \
+    VERSION=3.2 \
     RELEASE=1 \
     ARCH=x86_64
 
