@@ -227,7 +227,8 @@ run_doc_test() {
     docker run --rm ${IMAGE_NAME} /bin/bash -c "cat /${f}" >${tmpdir}/$(basename ${f})
     # Check whether the files include some important information
     for term in 6379 REDIS_PASSWORD volume ; do
-      if ! cat ${tmpdir}/$(basename ${f}) | grep -q -e "${term}" ; then
+      if ! cat ${tmpdir}/$(basename ${f}) | nroff | grep -q -e "${term}" ; then
+        # Pipe the content through nroff to allow for safer grepping
         echo "ERROR: File /${f} does not include '${term}'."
         return 1
       fi
