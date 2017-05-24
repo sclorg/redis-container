@@ -24,7 +24,11 @@ LABEL summary="$SUMMARY" \
       io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Redis 3.2" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis32,rh-redis32"
+      io.openshift.tags="database,redis,redis32,rh-redis32" \
+      com.redhat.component="rh-redis32-docker" \
+      name="centos/redis-32-centos7" \
+      version="3.2" \
+      release="1"
 
 EXPOSE 6379
 
@@ -59,7 +63,7 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
-ADD root /
+COPY root /
 
 # this is needed due to issues with squash
 # when this directory gets rm'd by the container-setup

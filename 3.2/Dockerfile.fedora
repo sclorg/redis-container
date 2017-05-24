@@ -11,14 +11,7 @@ ENV NAME=redis \
     VERSION=3.2 \
     RELEASE=1 \
     ARCH=x86_64
-
-LABEL BZComponent="$NAME" \
-      Name="$FGC/$NAME" \
-      Version="$VERSION" \
-      Release="$RELEASE.$DISTTAG" \
-      Architecture="$ARCH"
-
-ENV REDIS_VERSION=$VERSION \
+    REDIS_VERSION=$VERSION \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -35,7 +28,12 @@ LABEL summary="$SUMMARY" \
       io.k8s.description="$SUMMARY" \
       io.k8s.display-name="Redis 3.2" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis32,rh-redis32"
+      io.openshift.tags="database,redis,redis32,rh-redis32" \
+      com.redhat.component ="$NAME" \
+      name="$FGC/$NAME" \
+      version="$VERSION" \
+      release="$RELEASE.$DISTTAG" \
+      architecture="$ARCH"
 
 EXPOSE 6379
 
@@ -60,7 +58,7 @@ RUN dnf install -y yum-utils gettext policycoreutils && \
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/redis \
     REDIS_PREFIX=/usr
 
-ADD root /
+COPY root /
 
 # this is needed due to issues with squash
 # when this directory gets rm'd by the container-setup
