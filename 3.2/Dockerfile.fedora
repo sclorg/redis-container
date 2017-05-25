@@ -11,7 +11,8 @@ ENV NAME=redis \
     VERSION=3.2 \
     RELEASE=1 \
     ARCH=x86_64
-    REDIS_VERSION=$VERSION \
+
+ENV REDIS_VERSION=$VERSION \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -29,7 +30,7 @@ LABEL summary="$SUMMARY" \
       io.k8s.display-name="Redis 3.2" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis32,rh-redis32" \
-      com.redhat.component ="$NAME" \
+      com.redhat.component="$NAME" \
       name="$FGC/$NAME" \
       version="$VERSION" \
       release="$RELEASE.$DISTTAG" \
