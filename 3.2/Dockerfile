@@ -21,7 +21,7 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
-      io.k8s.description="$SUMMARY" \
+      io.k8s.description="$DESCRIPTION" \
       io.k8s.display-name="Redis 3.2" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis32,rh-redis32" \
