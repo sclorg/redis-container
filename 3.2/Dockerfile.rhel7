@@ -42,8 +42,14 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # This image must forever use UID 964 for redis user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
-RUN yum install -y yum-utils gettext && \
+
+# We need to call 2 (!) yum commands before being able to enable repositories properly
+# This is a workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1479388
+RUN yum repolist > /dev/null && \
+    yum install -y yum-utils gettext && \
+    yum-config-manager --disable \* &> /dev/null && \
     yum-config-manager --enable rhel-server-rhscl-7-rpms && \
+    yum-config-manager --enable rhel-7-server-rpms && \
     yum-config-manager --enable rhel-7-server-optional-rpms && \
     INSTALL_PKGS="rh-redis32" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
