@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# Test the Redis image in OpenShift.
+#
+# IMAGE_NAME specifies a name of the candidate image used for testing.
+# The image has to be available before this script is executed.
+#
+
+THISDIR=$(dirname ${BASH_SOURCE[0]})
+
+source "$THISDIR"/test-lib-openshift.sh
+
+set -exo nounset
+
+test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
+test -n "${VERSION-}" || false 'make sure $VERSION is defined'
+
+function check_redis_os_service_connection() {
+  local util_image_name=$1 ; shift
+  local service_name=$1 ; shift
+  local pass=$1 ; shift
+  local timeout=${1:-60} ; shift || :
+  local pod_ip=$(ct_os_get_service_ip ${service_name})
+
+  : "  Service ${service_name} check ..."
+
+  local cmd="timeout 15 redis-cli -h $pod_ip -a $pass ping"
+  local expected_value="PONG"
+  local output
+  local ret
+  SECONDS=0
+
+  echo -n "Waiting for ${service_name} service becoming ready ..."
+  while true ; do
+    output=$(docker run --rm ${util_image_name} bash -c "${cmd}" || :)
+    echo "${output}" | grep -qe "${expected_value}" && ret=0 || ret=1
+    if [ ${ret} -eq 0 ] ; then
+      echo " PASS"
+      return 0
+    fi
+    echo -n "."
+    [ ${SECONDS} -gt ${timeout} ] && break
+    sleep 3
+  done
+  echo " FAIL"
+  return 1
+}
+
+function test_redis_pure_image() {
+  local image_name=$1
+  local image_name_no_namespace=${image_name##*/}
+  local service_name=${image_name_no_namespace}
+
+  ct_os_new_project
+  ct_os_upload_image "${image_name}"
+  # Create a specific imagestream tag for the image so that oc cannot use anything else
+  ct_os_upload_image "${image_name}" "$image_name_no_namespace:testing"
+
+  ct_os_deploy_pure_image "$image_name_no_namespace:testing" \
+                          --name "${service_name}" \
+                          --env REDIS_PASSWORD=pass
+
+  ct_os_wait_pod_ready "${service_name}" 60
+  check_redis_os_service_connection "${image_name}" "${service_name}" pass
+
+  ct_os_delete_project
+}
+
+function test_redis_template() {
+  local image_name=${1:-centos/redis-32-centos7}
+  local image_name_no_namespace=${image_name##*/}
+  local service_name=${image_name_no_namespace}
+
+  ct_os_new_project
+  ct_os_upload_image "${image_name}" "redis:$VERSION"
+
+  ct_os_deploy_template_image "$THISDIR/redis-ephemeral-template.json" \
+                              NAMESPACE="$(oc project -q)" \
+                              REDIS_VERSION="$VERSION" \
+                              DATABASE_SERVICE_NAME="${service_name}" \
+                              REDIS_PASSWORD=pass
+
+  ct_os_wait_pod_ready "${service_name}" 60
+  check_redis_os_service_connection "${image_name}" "${service_name}" pass
+
+  ct_os_delete_project
+}
+
+ct_os_cluster_up
+test_redis_pure_image "${IMAGE_NAME}"
+test_redis_template "${IMAGE_NAME}"
