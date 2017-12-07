@@ -12,7 +12,9 @@ shopt -s nullglob
 
 [ "${DEBUG:-0}" -eq 1 ] && set -x
 
-IMAGE_NAME=${IMAGE_NAME-centos/redis-32-centos7-candidate}
+test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
+test -n "${VERSION-}" || false 'make sure $VERSION is defined'
+
 test_exit=1
 
 CIDFILE_DIR=$(mktemp --suffix=redis_test_cidfiles -d)
@@ -247,7 +249,7 @@ function run_tests() {
   create_container $name $envs
   test_connection "$name" "$PASS"
   echo "  Testing scl usage"
-  test_scl_usage $name 'redis-server --version' '3.2.'
+  test_scl_usage $name 'redis-server --version' "$VERSION"
   echo "  Testing login accesses"
   local container_ip
   container_ip=$(get_container_ip $name)
