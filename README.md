@@ -2,7 +2,7 @@ Redis Docker image
 ==================
 
 This repository contains Dockerfiles for Redis Docker image.
-Users can choose between RHEL and CentOS based images.
+Users can choose between RHEL, Fedora and CentOS based images.
 
 For more information about contributing, see
 [the Contribution Guidelines](https://github.com/sclorg/welcome/blob/master/contribution.md).
@@ -27,7 +27,8 @@ Installation
 To build a Redis image, choose either the CentOS or RHEL based image:
 *  **RHEL based image**
 
-    This image is available in Red Hat Container Registry. To download it run:
+    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhscl/redis-32-rhel7).
+    To download it run:
 
     ```
     $ docker pull registry.access.redhat.com/rhscl/redis-32-rhel7
@@ -68,7 +69,7 @@ Usage
 ---------------------------------
 
 For information about usage of Dockerfile for Redis 3.2,
-see [usage documentation](3.2/README.md).
+see [usage documentation](3.2).
 
 Test
 ---------------------
