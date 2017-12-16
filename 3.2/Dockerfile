@@ -28,7 +28,8 @@ LABEL summary="$SUMMARY" \
       com.redhat.component="rh-redis32-docker" \
       name="centos/redis-32-centos7" \
       version="3.2" \
-      release="1"
+      usage="docker run -d --name redis_database -p 6379:6379 centos/redis-32-centos7" \
+      maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
 
