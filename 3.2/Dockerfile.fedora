@@ -1,4 +1,4 @@
-FROM fedora:25
+FROM registry.fedoraproject.org/f27/s2i-core:latest
 
 # Redis image based on Software Collections packages
 #
