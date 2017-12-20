@@ -53,15 +53,15 @@ use a very strong password otherwise it will be very easy to break.**
 Environment variables and volumes
 ----------------------------------
 
-|    Variable name       |    Description                            |
-| :--------------------- | ----------------------------------------- |
-|  `REDIS_PASSWORD`      | Password for the server access            |
+**`REDIS_PASSWORD`**  
+       Password for the server access
+
 
 You can also set the following mount points by passing the `-v /host:/container:Z` flag to Docker.
 
-|  Volume mount point      | Description          |
-| :----------------------- | -------------------- |
-|  `/var/lib/redis/data`   | Redis data directory |
+**`/var/lib/redis/data`**  
+       Redis data directory
+
 
 **Notice: When mouting a directory from the host into the container, ensure that the mounted
 directory has the appropriate permissions and that the owner and group of the directory
