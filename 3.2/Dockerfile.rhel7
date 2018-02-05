@@ -8,6 +8,7 @@ FROM rhscl/s2i-core-rhel7
 #  * $REDIS_PASSWORD - Database password
 
 ENV REDIS_VERSION=3.2 \
+    APP_DATA=${APP_ROOT}/src \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -63,12 +64,15 @@ ENV BASH_ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     ENV=${CONTAINER_SCRIPTS_PATH}/scl_enable \
     PROMPT_COMMAND=". ${CONTAINER_SCRIPTS_PATH}/scl_enable"
 
+COPY s2i/bin $STI_SCRIPTS_PATH
 COPY root /
 
 # this is needed due to issues with squash
 # when this directory gets rm'd by the container-setup
 # script.
 RUN /usr/libexec/container-setup
+
+RUN usermod -a -G root redis
 
 VOLUME ["/var/lib/redis/data"]
 
