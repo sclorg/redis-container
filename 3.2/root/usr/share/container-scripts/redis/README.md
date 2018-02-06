@@ -68,6 +68,26 @@ directory has the appropriate permissions and that the owner and group of the di
 matches the user UID or name which is running inside the container.**
 
 
+Extending image
+---------------
+This image can be extended using [source-to-image](https://github.com/openshift/source-to-image).
+
+For example, to build a customized redis database image `my-redis-rhel7`
+with a configuration in `~/image-configuration/` run:
+
+```
+$ s2i build ~/image-configuration/ rhscl/redis-32-rhel7 my-redis-rhel7
+```
+
+The directory passed to `s2i build` can contain these directories:
+
+`redis-cfg/`
+    When starting the container, `redis.config` file from this directory will be imported in
+    a configuration for the `redis-server` daemon.
+    `envsubst` command is run on this file to still allow customization of
+    the image using environmental variables
+
+
 Troubleshooting
 ---------------
 Redis logs into standard output, so the log is available in the container log. The log can be examined by running:
