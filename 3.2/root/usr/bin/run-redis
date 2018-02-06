@@ -6,7 +6,7 @@ set -eu
 
 [ -f ${CONTAINER_SCRIPTS_PATH}/validate-variables.sh ] && source ${CONTAINER_SCRIPTS_PATH}/validate-variables.sh
 
-S2I_REDIS_CONFIG=${APP_DATA}/redis-cfg/redis.conf
+S2I_REDIS_CONFIG=${S2I_REDIS_CONFIG:-${APP_DATA}/redis-cfg/redis.conf}
 
 if [ -f ${S2I_REDIS_CONFIG} ]; then
     log_info '---> Found s2i provided config, including it...'
