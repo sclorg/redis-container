@@ -85,7 +85,13 @@ The directory passed to `s2i build` can contain these directories:
     When starting the container, `redis.config` file from this directory will be imported in
     a configuration for the `redis-server` daemon.
     `envsubst` command is run on this file to still allow customization of
-    the image using environmental variables
+    the image using environmental variables.
+
+`redis-pre-init/`
+    Contained shell scripts (`*.sh`) are sourced in alphabetical order every start before volume gets initialised and local daemon starts. If you pass any script with the same name as builtin one, builtin one gets overrided allowing you to modify default container behavior.
+
+`redis-start/`
+    Contained shell scripts (`*.sh`) are sourced in alphabetical order every start after volume has been initialised and local daemon is running without password. If you pass any script with the same name as builtin one, builtin one gets overrided allowing you to modify default container behavior.
 
 
 Troubleshooting
