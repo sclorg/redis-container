@@ -35,7 +35,7 @@ LABEL summary="$SUMMARY" \
       name="$FGC/$NAME" \
       version="$VERSION" \
       release="$RELEASE.$DISTTAG" \
-      architecture="$ARCH"
+      architecture="$ARCH" \
       usage="docker run -d --name redis_database -p 6379:6379 $FGC/$NAME" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
@@ -44,18 +44,19 @@ EXPOSE 6379
 # Create user for redis that has known UID
 # We need to do this before installing the RPMs which would create user with random UID
 RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
-    getent passwd redis &> /dev/null || useradd -u 1001 -r -g redis -d $HOME -s /sbin/nologin \
-           -c 'Redis Server' redis &> /dev/null
+    usermod -l redis -g redis -c 'Redis Server' default &> /dev/null
+
 
 # Install gettext for envsubst command
 # This image must forever use UID 964 for redis user so our volumes are
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
+# rpm -V $INSTALL_PKGS returns 1 so it fails here
 RUN dnf install -y yum-utils gettext policycoreutils && \
     INSTALL_PKGS="redis" && \
-    dnf install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS && \
-    rpm -V $INSTALL_PKGS && \
-    dnf clean all && \
+    dnf install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS
+RUN rpm -V --noghost redis
+RUN dnf clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
