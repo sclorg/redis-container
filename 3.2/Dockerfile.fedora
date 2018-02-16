@@ -54,9 +54,9 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # rpm -V $INSTALL_PKGS returns 1 so it fails here
 RUN dnf install -y yum-utils gettext policycoreutils && \
     INSTALL_PKGS="redis" && \
-    dnf install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS
-RUN rpm -V --noghost redis
-RUN dnf clean all && \
+    dnf install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS && \
+    rpm -V --noghost $INSTALL_PKGS && \
+    dnf clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
