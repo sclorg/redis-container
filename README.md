@@ -1,12 +1,12 @@
-Redis Docker image
+Redis container image
 ==================
 
-This repository contains Dockerfiles for Redis Docker image.
+This repository contains Dockerfiles for Redis container image.
 Users can choose between RHEL, Fedora and CentOS based images.
 
 For more information about contributing, see
 [the Contribution Guidelines](https://github.com/sclorg/welcome/blob/master/contribution.md).
-For more information about concepts used in these docker images, see the
+For more information about concepts used in these container images, see the
 [Landing page](https://github.com/sclorg/welcome).
 
 
