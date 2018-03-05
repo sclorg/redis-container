@@ -1,4 +1,4 @@
-Redis 3.2 in-memory data structure store Docker image
+Redis 3.2 in-memory data structure store container image
 ====================
 
 This container image includes Redis 3.2 in-memory data structure store for OpenShift and general usage.
@@ -12,7 +12,7 @@ as centos/redis-32-centos7.
 Description
 -----------
 
-Redis 3.2 available as docker container, is an advanced key-value store. 
+Redis 3.2 available as container, is an advanced key-value store. 
 It is often referred to as a data structure server since keys can contain strings, hashes, lists, 
 sets and sorted sets. You can run atomic operations on these types, like appending to a string; 
 incrementing the value in a hash; pushing to a list; computing set intersection, union and difference; 

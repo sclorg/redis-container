@@ -16,7 +16,7 @@ ENV REDIS_VERSION=$VERSION \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
-    DESCRIPTION="Redis $REDIS_VERSION available as docker container, is an advanced key-value store. \
+    DESCRIPTION="Redis $REDIS_VERSION available as container, is an advanced key-value store. \
 It is often referred to as a data structure server since keys can contain strings, hashes, lists, \
 sets and sorted sets. You can run atomic operations on these types, like appending to a string; \
 incrementing the value in a hash; pushing to a list; computing set intersection, union and difference; \
