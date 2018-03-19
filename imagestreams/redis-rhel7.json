@@ -21,6 +21,9 @@
           "kind": "ImageStreamTag",
           "name": "3.2"
         },
+        "referencePolicy": {
+          "type": "Local"
+        },
         "name": "latest"
       },
       {
@@ -35,6 +38,9 @@
         "from": {
           "kind": "DockerImage",
           "name": "registry.access.redhat.com/rhscl/redis-32-rhel7:latest"
+        },
+        "referencePolicy": {
+          "type": "Local"
         },
         "name": "3.2"
       }
