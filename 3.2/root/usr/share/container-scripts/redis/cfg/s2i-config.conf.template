@@ -1,0 +1,3 @@
+# s2i provided custom config
+include ${S2I_REDIS_CONFIG}
+

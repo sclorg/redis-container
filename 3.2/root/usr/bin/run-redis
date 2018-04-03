@@ -4,21 +4,19 @@ export_vars=$(cgroup-limits); export $export_vars
 source ${CONTAINER_SCRIPTS_PATH}/common.sh
 set -eu
 
-[ -f ${CONTAINER_SCRIPTS_PATH}/validate-variables.sh ] && source ${CONTAINER_SCRIPTS_PATH}/validate-variables.sh
+#pre-init phase
+process_extending_files ${APP_DATA}/redis-pre-init/ ${CONTAINER_SCRIPTS_PATH}/pre-init/
 
-# Process the Redis configuration files
-log_info 'Processing Redis configuration files ...'
-if [[ -v REDIS_PASSWORD ]]; then
-  envsubst < ${CONTAINER_SCRIPTS_PATH}/password.conf.template >> /etc/redis.conf
-else
-  log_info 'WARNING: setting REDIS_PASSWORD is recommended'
-fi
+# starting daemon locally without password so user's start hooks has access to db
+${REDIS_PREFIX}/bin/redis-server /etc/redis.conf --requirepass known --bind "127.0.0.1" "$@" & 2>&1
+wait_for_redis_up
+# no other way how to start it without password
+redis-cli -a known CONFIG SET requirepass ""
 
-# Source post-init source if exists
-if [ -f ${CONTAINER_SCRIPTS_PATH}/post-init.sh ]; then
-  log_info 'Sourcing post-init.sh ...'
-  source ${CONTAINER_SCRIPTS_PATH}/post-init.sh
-fi
+! process_extending_files ${APP_DATA}/redis-start/ ${CONTAINER_SCRIPTS_PATH}/start/ && redis-cli shutdown && false
+
+redis-cli shutdown
+wait_for_redis_down
 
 # Restart the Redis server with public IP bindings
 unset_env_vars

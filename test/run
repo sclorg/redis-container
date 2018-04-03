@@ -8,58 +8,44 @@
 
 set -o errexit
 set -o nounset
+set -x
 shopt -s nullglob
 
-[ "${DEBUG:-0}" -eq 1 ] && set -x
 
 test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
 test -n "${VERSION-}" || false 'make sure $VERSION is defined'
 
-test_exit=1
+. test/test-lib.sh
 
-CIDFILE_DIR=$(mktemp --suffix=redis_test_cidfiles -d)
+# **Test description**
+# Assert container creation fails
+# Normal tests without password
+# Normal tests with password
+# Test with arbitrary uid for the container without password
+# Test with arbitrary uid for the container with password
+# Test the password change
+# Test s2i config file extension
+# Test whether documentation is part of the image
 
-function cleanup() {
-  local cidfile
-  for cidfile in $CIDFILE_DIR/* ; do
-    local CONTAINER
-    CONTAINER=$(cat $cidfile)
+TEST_LIST="\
+run_container_creation_tests \
+run_tests_no_pass \
+run_tests_pass_no_root \
+run_test_arbitrary_uid_no_pass \
+run_test_arbitrary_uid_w_pass \
+run_change_password_test \
+run_s2i_config_test \
+run_doc_test
+"
 
-    echo "Stopping and removing container $CONTAINER..."
-    docker stop $CONTAINER >/dev/null
-    local exit_status
-    exit_status=$(docker inspect -f '{{.State.ExitCode}}' $CONTAINER)
-    if [ "$exit_status" != "0" ]; then
-      echo "Inspecting container $CONTAINER"
-      docker inspect $CONTAINER
-      echo "Dumping logs for $CONTAINER"
-      docker logs $CONTAINER
-    fi
-    docker rm -v $CONTAINER >/dev/null
-    rm $cidfile
-    echo "Done."
-  done
-  rmdir $CIDFILE_DIR
+test $# -eq 1 -a "${1-}" == --list && exit 0
 
-  # Report whole test result
-  if [ "$test_exit" -eq 0 ] ; then
-    echo "Test succeeded."
-  else
-    echo "Test failed."
-  fi
-  exit $test_exit
-}
-trap cleanup EXIT SIGINT
+CID_FILE_DIR=$(mktemp --suffix=redis_test_cidfiles -d)
 
-function get_cid() {
-  local id="$1" ; shift || return 1
-  echo $(cat "$CIDFILE_DIR/$id")
-}
+TEST_DIR="$(readlink -zf $(dirname "${BASH_SOURCE[0]}"))"
+S2I_ARGS="--force-pull=false "
 
-function get_container_ip() {
-  local id="$1" ; shift
-  docker inspect --format='{{.NetworkSettings.IPAddress}}' $(get_cid "$id")
-}
+ct_enable_cleanup
 
 function connection_works() {
   local container_ip="$1"; shift
@@ -81,7 +67,7 @@ function test_connection() {
   local name=$1 ; shift
   local password=$1 ; shift
   local ip
-  ip=$(get_container_ip $name)
+  ip=$(ct_get_cip $name)
   echo "  Testing Redis connection to $ip (password='${password:-}')..."
   local max_attempts=10
   local sleep_time=2
@@ -96,7 +82,7 @@ function test_connection() {
     sleep $sleep_time
   done
   echo "  Giving up: Failed to connect. Logs:"
-  docker logs $(get_cid $name)
+  docker logs $(ct_get_cid $name)
   return 1
 }
 
@@ -112,37 +98,33 @@ function test_redis() {
   echo
 }
 
-function create_container() {
-  local name=$1 ; shift
-  cidfile="$CIDFILE_DIR/$name"
-  # create container with a cidfile in a directory for cleanup
-  local container_id
-  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
-  container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
-  [ "${DEBUG:-0}" -eq 1 ] && echo "Created container $container_id"
-  return 0
-}
-
 function run_change_password_test() {
   local tmpdir=$(mktemp -d)
   mkdir "${tmpdir}/data" && chmod -R a+rwx "${tmpdir}"
-
+  local id=$(ct_random_string)
   # Create Redis container with persistent volume and set the initial password
-  create_container "testpass1" -e REDIS_PASSWORD=foo \
-    -v ${tmpdir}:/var/lib/redis/data:Z
-  test_connection testpass1 foo
-  docker stop $(get_cid testpass1) >/dev/null
+  CONTAINER_ARGS="-e REDIS_PASSWORD=foo \
+    -v ${tmpdir}:/var/lib/redis/data:Z" \
+    ct_create_container "testpass1-$id"
+
+  test_connection "testpass1-$id" foo
+  docker stop $(ct_get_cid "testpass1-$id") >/dev/null
 
   # Create second container with changed password
-  create_container "testpass2" -e REDIS_PASSWORD=bar \
-    -v ${tmpdir}:/var/lib/redis/data:Z
-  test_connection testpass2 bar
+  CONTAINER_ARGS="-e REDIS_PASSWORD=bar \
+    -v ${tmpdir}:/var/lib/redis/data:Z" \
+    ct_create_container "testpass2-$id"
+
+  test_connection "testpass2-$id" bar
 
   # The old password should not work anymore
-  container_ip="$(get_container_ip testpass2)"
+  container_ip="$(ct_get_cip "testpass2-$id")"
   if connection_works "$container_ip" foo ; then
+    docker stop $(ct_get_cid "testpass2-$id") >/dev/null
     return 1
   fi
+  docker stop $(ct_get_cid "testpass2-$id") >/dev/null
+
 }
 
 function assert_login_access() {
@@ -167,26 +149,13 @@ function assert_login_access() {
 
 function assert_local_access() {
   local id="$1" ; shift
-  docker exec $(get_cid "$id") bash -c 'redis-cli ping'
-}
-
-# Make sure the invocation of docker run fails.
-function assert_container_creation_fails() {
-
-  # Time the docker run command. It should fail. If it doesn't fail,
-  # redis will keep running so we kill it with SIGKILL to make sure
-  # timeout returns a non-zero value.
-  local ret=0
-  timeout -s 9 --preserve-status 60s docker run --rm "$@" $IMAGE_NAME >/dev/null || ret=$?
-
-  # Timeout will exit with a high number.
-  if [ $ret -gt 10 ]; then
-    return 1
-  fi
+  docker exec $(ct_get_cid "$id") bash -c 'redis-cli ping'
 }
 
 function try_image_invalid_combinations() {
-  assert_container_creation_fails -e REDIS_PASSWORD="pass with space" "$@"
+  # prevents CONTAINER_ARGS leakage where it is expected as unset
+  local CONTAINER_ARGS=${CONTAINER_ARGS-}
+  ct_assert_container_creation_fails -e 'REDIS_PASSWORD="bad\/password"' "$@"
 }
 
 function run_container_creation_tests() {
@@ -194,30 +163,6 @@ function run_container_creation_tests() {
   try_image_invalid_combinations
   echo "  Success!"
   echo
-}
-
-test_scl_usage() {
-  local name="$1"
-  local run_cmd="$2"
-  local expected="$3"
-
-  echo "  Testing the image SCL enable"
-  local out
-  out=$(docker run --rm ${IMAGE_NAME} /bin/bash -c "${run_cmd}")
-  if ! echo "${out}" | grep -q "${expected}"; then
-    echo "ERROR[/bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
-    return 1
-  fi
-  out=$(docker exec $(get_cid $name) /bin/bash -c "${run_cmd}" 2>&1)
-  if ! echo "${out}" | grep -q "${expected}"; then
-    echo "ERROR[exec /bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
-    return 1
-  fi
-  out=$(docker exec $(get_cid $name) /bin/sh -ic "${run_cmd}" 2>&1)
-  if ! echo "${out}" | grep -q "${expected}"; then
-    echo "ERROR[exec /bin/sh -ic "${run_cmd}"] Expected '${expected}', got '${out}'"
-    return 1
-  fi
 }
 
 run_doc_test() {
@@ -242,17 +187,73 @@ run_doc_test() {
   echo
 }
 
+test_the_app_image() {
+  local container_name=$1
+  local mount_opts=$2
+  echo "  Testing s2i app image with invalid configuration"
+  # test whether s2i extension doesn't break basic functionality
+  try_image_invalid_combinations
+  
+  # test whether s2i provided config is overridable using envvars
+  run_change_password_test
+
+  local id=$(ct_random_string)
+  ct_create_container "$container_name-$id"
+
+  # test whether s2i provided config took place
+  test_connection "$container_name-$id" "random_pass"
+  
+  docker stop "$(ct_get_cid "$container_name-$id")" > /dev/null
+
+  local id=$(ct_random_string)
+
+    CONTAINER_ARGS="
+${mount_opts}
+" ct_create_container "$container_name-$id"
+  
+  # wait for redis to be ready
+  test_connection "$container_name-$id" "random_pass"
+
+  test "$(redis_cmd $(ct_get_cip "$container_name-$id") "random_pass" CONFIG GET maxclients)" = "$(echo -e "maxclients\n5000")"
+  
+  docker stop "$(ct_get_cid "$container_name-$id")" > /dev/null
+  
+  
+
+}
+
+run_s2i_config_test() {
+  echo "  Testing s2i usage"
+  s2i usage ${S2I_ARGS} ${IMAGE_NAME} &>/dev/null
+
+  echo "  Testing s2i build"
+  local s2i_image_name=$IMAGE_NAME-testapp_$(ct_random_string)
+
+  s2i build "file://${TEST_DIR}/examples/s2i-config-extension" "${IMAGE_NAME}" "${s2i_image_name}"
+
+  IMAGE_NAME=$s2i_image_name test_the_app_image s2i_config_build ""
+  
+  echo "  Testing s2i mount"
+
+  test_app_dir=$(mktemp -d)
+  cp -r ${TEST_DIR}/examples/s2i-config-extension/ $test_app_dir/
+  chmod -R a+rX ${test_app_dir}
+
+  IMAGE_NAME=$s2i_image_name test_the_app_image "s2i_test_mount" "-v ${test_app_dir}/s2i-config-extension:/opt/app-root/src/:z"
+
+}
+
 function run_tests() {
   local name=$1 ; shift
   envs=${PASS:+"-e REDIS_PASSWORD=$PASS"}
   PASS=${PASS:-}
-  create_container $name $envs
+  CONTAINER_ARGS=${envs} ct_create_container $name
   test_connection "$name" "$PASS"
   echo "  Testing scl usage"
-  test_scl_usage $name 'redis-server --version' "$VERSION"
+  ct_scl_usage_old $name 'redis-server --version' "$VERSION"
   echo "  Testing login accesses"
   local container_ip
-  container_ip=$(get_container_ip $name)
+  container_ip=$(ct_get_cip $name)
   assert_login_access "$container_ip" "$PASS" true
   if [ -n "$PASS" ] ; then
     assert_login_access "$container_ip" "${PASS}_foo" false
@@ -263,24 +264,47 @@ function run_tests() {
   test_redis "$container_ip" "$PASS"
 }
 
+run_tests_no_pass() {
+  run_tests no_pass
+}
+
+run_tests_pass_no_root() {
+  PASS=pass run_tests no_root
+}
+
+run_test_arbitrary_uid_no_pass() {
+  CONTAINER_ARGS="-u 12345" run_tests no_pass_altuid
+}
+
+run_test_arbitrary_uid_w_pass() {
+  CONTAINER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
+}
+
+
+
 # Tests.
 
-# Test whether documentation is part of the image
-run_container_creation_tests
+## Test whether documentation is part of the image
+#run_container_creation_tests
+#
+## Normal tests without password
+#run_tests no_pass
+## Normal tests with password
+#PASS=pass run_tests no_root
+## Test with arbitrary uid for the container without password
+#CONTAINER_ARGS="-u 12345" run_tests no_pass_altuid
+## Test with arbitrary uid for the container with password
+#CONTAINER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
+#
+## Test the password change
+#run_change_password_test
+#
+## Test s2i config file extension
+#run_s2i_config_test
+#
+## Test whether documentation is part of the image
+#run_doc_test
 
-# Normal tests without password
-run_tests no_pass
-# Normal tests with password
-PASS=pass run_tests no_root
-# Test with arbitrary uid for the container without password
-DOCKER_ARGS="-u 12345" run_tests no_pass_altuid
-# Test with arbitrary uid for the container with password
-DOCKER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
 
-# Test the password change
-run_change_password_test
-
-# Test whether documentation is part of the image
-run_doc_test
-
-test_exit=0
+# Run the chosen tests
+TEST_LIST=${@:-$TEST_LIST} ct_run_test_list

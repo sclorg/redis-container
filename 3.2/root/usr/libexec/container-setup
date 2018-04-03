@@ -28,4 +28,4 @@ chmod 0660 /etc/redis.conf
 
 # adjust config with changes we do every-time
 clear_config
-envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> /etc/redis.conf
+envsubst < ${CONTAINER_SCRIPTS_PATH}/cfg/base.conf.template >> /etc/redis.conf
