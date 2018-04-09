@@ -45,10 +45,10 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 
-RUN yum install -y yum-utils gettext groff && \
+RUN yum install -y yum-utils gettext && \
     prepare-yum-repositories rhel-server-rhscl-7-rpms && \
     INSTALL_PKGS="rh-redis32" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS "groff" && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
