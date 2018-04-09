@@ -224,7 +224,7 @@ ${mount_opts}
 
 run_s2i_config_test() {
   echo "  Testing s2i usage"
-  s2i usage ${S2I_ARGS} ${IMAGE_NAME}
+  s2i usage ${S2I_ARGS} ${IMAGE_NAME} &>/dev/null
 
   echo "  Testing s2i build"
   local s2i_image_name=$IMAGE_NAME-testapp_$(ct_random_string)
