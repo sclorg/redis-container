@@ -48,7 +48,7 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 RUN yum install -y yum-utils gettext && \
     prepare-yum-repositories rhel-server-rhscl-7-rpms && \
     INSTALL_PKGS="rh-redis32" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS "groff" && \
+    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
@@ -72,9 +72,8 @@ COPY root /
 # this is needed due to issues with squash
 # when this directory gets rm'd by the container-setup
 # script.
-RUN /usr/libexec/container-setup
-
-RUN usermod -a -G root redis
+RUN /usr/libexec/container-setup && \
+    usermod -a -G root redis
 
 VOLUME ["/var/lib/redis/data"]
 

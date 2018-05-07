@@ -69,9 +69,8 @@ COPY root /
 # this is needed due to issues with squash
 # when this directory gets rm'd by the container-setup
 # script.
-RUN /usr/libexec/container-setup
-
-RUN usermod -a -G root redis
+RUN /usr/libexec/container-setup && \
+    usermod -a -G root redis
 
 VOLUME ["/var/lib/redis/data"]
 
