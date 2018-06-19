@@ -12,8 +12,9 @@ shopt -s nullglob
 
 [ "${DEBUG:-0}" -eq 1 ] && set -x
 
-test -n "${IMAGE_NAME-}" || false 'make sure $IMAGE_NAME is defined'
-test -n "${VERSION-}" || false 'make sure $VERSION is defined'
+test -n "${IMAGE_NAME-}" || { echo 'make sure $IMAGE_NAME is defined' && false ;}
+test -n "${VERSION-}" || { echo 'make sure $VERSION is defined' && false; }
+test -n "${OS-}" || { echo 'make sure $OS is defined' && false; }
 
 test_exit=1
 
@@ -248,8 +249,11 @@ function run_tests() {
   PASS=${PASS:-}
   create_container $name $envs
   test_connection "$name" "$PASS"
-  echo "  Testing scl usage"
-  test_scl_usage $name 'redis-server --version' "$VERSION"
+  # Only check version on rhel/centos builds
+  if [ "$OS" != "fedora" ]; then
+    echo "  Testing scl usage"
+    test_scl_usage $name 'redis-server --version' "$VERSION"
+  fi
   echo "  Testing login accesses"
   local container_ip
   container_ip=$(get_container_ip $name)
