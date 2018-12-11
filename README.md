@@ -14,9 +14,11 @@ Versions
 ---------------
 Redis versions currently provided are:
 * [redis-3.2](3.2)
+* [redis-4.0](4.0)
 
 RHEL versions currently supported are:
 * RHEL7
+* RHEL8
 
 CentOS versions currently supported are:
 * CentOS7
@@ -70,6 +72,9 @@ Usage
 
 For information about usage of Dockerfile for Redis 3.2,
 see [usage documentation](3.2).
+
+For information about usage of Dockerfile for Redis 4.0,
+see [usage documentation](4.0).
 
 Test
 ---------------------
