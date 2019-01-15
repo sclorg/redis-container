@@ -1,18 +1,18 @@
-Redis 4.0 in-memory data structure store container image
+Redis 5 in-memory data structure store container image
 ====================
 
-This container image includes Redis 4.0 in-memory data structure store for OpenShift and general usage.
+This container image includes Redis 5 in-memory data structure store for OpenShift and general usage.
 Users can choose between RHEL and CentOS based images.
-The RHEL image is available in the [Red Hat Container Catalog](https://access.redhat.com/#/registry.access.redhat.com/rhel8/redis-40)
-as registry.access.redhat.com/rhel8/redis-40.
-The CentOS image is then available on [Docker Hub](https://hub.docker.com/r/centos/redis-40-centos8/)
-as centos/redis-40-centos8.
+The RHEL image is available in the [Red Hat Container Catalog](https://access.redhat.com/#/registry.access.redhat.com/rhel8/redis-5)
+as registry.access.redhat.com/rhel8/redis-5.
+The CentOS image is then available on [Docker Hub](https://hub.docker.com/r/centos/redis-5-centos8/)
+as centos/redis-5-centos8.
 
 
 Description
 -----------
 
-Redis 4.0 available as container, is an advanced key-value store. 
+Redis 5 available as container, is an advanced key-value store. 
 It is often referred to as a data structure server since keys can contain strings, hashes, lists, 
 sets and sorted sets. You can run atomic operations on these types, like appending to a string; 
 incrementing the value in a hash; pushing to a list; computing set intersection, union and difference; 
@@ -24,12 +24,12 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 Usage
 -----
 
-For this, we will assume that you are using the `rhel8/redis-40` image.
+For this, we will assume that you are using the `rhel8/redis-5` image.
 If you want to set only the mandatory environment variables and not store
 the database in a host directory, execute the following command:
 
 ```
-$ docker run -d --name redis_database -p 6379:6379 rhel8/redis-40
+$ docker run -d --name redis_database -p 6379:6379 rhel8/redis-5
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
@@ -42,7 +42,7 @@ For protecting Redis data by a password, pass `REDIS_PASSWORD` environment varia
 to the container like this:
 
 ```
-$ docker run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel8/redis-40
+$ docker run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel8/redis-5
 ```
 
 **Warning: since Redis is pretty fast an outside user can try up to

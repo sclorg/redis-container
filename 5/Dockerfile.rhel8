@@ -7,7 +7,7 @@ FROM rhel8/s2i-core
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
-ENV REDIS_VERSION=4.0 \
+ENV REDIS_VERSION=5 \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -22,13 +22,13 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Redis 4.0" \
+      io.k8s.display-name="Redis $REDIS_VERSION" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis40,redis-40" \
-      com.redhat.component="redis-40-container" \
-      name="rhel8/redis-40" \
+      io.openshift.tags="database,redis,redis$REDIS_VERSION,redis-$REDIS_VERSION" \
+      com.redhat.component="redis-$REDIS_VERSION-container" \
+      name="rhel8/redis-$REDIS_VERSION" \
       version="1" \
-      usage="docker run -d --name redis_database -p 6379:6379 rhel8/redis-40" \
+      usage="docker run -d --name redis_database -p 6379:6379 rhel8/redis-$REDIS_VERSION" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
