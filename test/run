@@ -15,6 +15,7 @@ shopt -s nullglob
 test -n "${IMAGE_NAME-}" || { echo 'make sure $IMAGE_NAME is defined' && false ;}
 test -n "${VERSION-}" || { echo 'make sure $VERSION is defined' && false; }
 test -n "${OS-}" || { echo 'make sure $OS is defined' && false; }
+test -n "${OCI_RUNTIME_TOOL-}" || { podman --version &>/dev/null && export OCI_RUNTIME_TOOL=podman || export OCI_RUNTIME_TOOL=docker; }
 
 test_exit=1
 
@@ -27,16 +28,16 @@ function cleanup() {
     CONTAINER=$(cat $cidfile)
 
     echo "Stopping and removing container $CONTAINER..."
-    docker stop $CONTAINER >/dev/null
+    $OCI_RUNTIME_TOOL stop $CONTAINER >/dev/null
     local exit_status
-    exit_status=$(docker inspect -f '{{.State.ExitCode}}' $CONTAINER)
+    exit_status=$($OCI_RUNTIME_TOOL inspect -f '{{.State.ExitCode}}' $CONTAINER)
     if [ "$exit_status" != "0" ]; then
       echo "Inspecting container $CONTAINER"
-      docker inspect $CONTAINER
+      $OCI_RUNTIME_TOOL inspect $CONTAINER
       echo "Dumping logs for $CONTAINER"
-      docker logs $CONTAINER
+      $OCI_RUNTIME_TOOL logs $CONTAINER
     fi
-    docker rm -v $CONTAINER >/dev/null
+    $OCI_RUNTIME_TOOL rm -v $CONTAINER >/dev/null
     rm $cidfile
     echo "Done."
   done
@@ -59,7 +60,7 @@ function get_cid() {
 
 function get_container_ip() {
   local id="$1" ; shift
-  docker inspect --format='{{.NetworkSettings.IPAddress}}' $(get_cid "$id")
+  $OCI_RUNTIME_TOOL inspect --format='{{.NetworkSettings.IPAddress}}' $(get_cid "$id")
 }
 
 function connection_works() {
@@ -75,7 +76,7 @@ function redis_cmd() {
   local container_ip="$1"; shift
   local password="$1"; shift
   # if empty password is given, then no password will be specified
-  docker run --rm "$IMAGE_NAME" redis-cli -h "$container_ip" ${password:+-a "$password"} "$@"
+  $OCI_RUNTIME_TOOL run --rm "$IMAGE_NAME" redis-cli -h "$container_ip" ${password:+-a "$password"} "$@"
 }
 
 function test_connection() {
@@ -97,7 +98,7 @@ function test_connection() {
     sleep $sleep_time
   done
   echo "  Giving up: Failed to connect. Logs:"
-  docker logs $(get_cid $name)
+  $OCI_RUNTIME_TOOL logs $(get_cid $name)
   return 1
 }
 
@@ -118,8 +119,8 @@ function create_container() {
   cidfile="$CIDFILE_DIR/$name"
   # create container with a cidfile in a directory for cleanup
   local container_id
-  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
-  container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
+  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: $OCI_RUNTIME_TOOL run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
+  container_id="$($OCI_RUNTIME_TOOL run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
   [ "${DEBUG:-0}" -eq 1 ] && echo "Created container $container_id"
   return 0
 }
@@ -132,7 +133,7 @@ function run_change_password_test() {
   create_container "testpass1" -e REDIS_PASSWORD=foo \
     -v ${tmpdir}:/var/lib/redis/data:Z
   test_connection testpass1 foo
-  docker stop $(get_cid testpass1) >/dev/null
+  $OCI_RUNTIME_TOOL stop $(get_cid testpass1) >/dev/null
 
   # Create second container with changed password
   create_container "testpass2" -e REDIS_PASSWORD=bar \
@@ -168,17 +169,17 @@ function assert_login_access() {
 
 function assert_local_access() {
   local id="$1" ; shift
-  docker exec $(get_cid "$id") bash -c 'redis-cli ping'
+  $OCI_RUNTIME_TOOL exec $(get_cid "$id") bash -c 'redis-cli ping'
 }
 
-# Make sure the invocation of docker run fails.
+# Make sure the invocation of $OCI_RUNTIME_TOOL run fails.
 function assert_container_creation_fails() {
 
-  # Time the docker run command. It should fail. If it doesn't fail,
+  # Time the $OCI_RUNTIME_TOOL run command. It should fail. If it doesn't fail,
   # redis will keep running so we kill it with SIGKILL to make sure
   # timeout returns a non-zero value.
   local ret=0
-  timeout -s 9 --preserve-status 60s docker run --rm "$@" $IMAGE_NAME >/dev/null || ret=$?
+  timeout -s 9 --preserve-status 60s $OCI_RUNTIME_TOOL run --rm "$@" $IMAGE_NAME >/dev/null || ret=$?
 
   # Timeout will exit with a high number.
   if [ $ret -gt 10 ]; then
@@ -204,17 +205,17 @@ test_scl_usage() {
 
   echo "  Testing the image SCL enable"
   local out
-  out=$(docker run --rm ${IMAGE_NAME} /bin/bash -c "${run_cmd}")
+  out=$($OCI_RUNTIME_TOOL run --rm ${IMAGE_NAME} /bin/bash -c "${run_cmd}")
   if ! echo "${out}" | grep -q "${expected}"; then
     echo "ERROR[/bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
   fi
-  out=$(docker exec $(get_cid $name) /bin/bash -c "${run_cmd}" 2>&1)
+  out=$($OCI_RUNTIME_TOOL exec $(get_cid $name) /bin/bash -c "${run_cmd}" 2>&1)
   if ! echo "${out}" | grep -q "${expected}"; then
     echo "ERROR[exec /bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
   fi
-  out=$(docker exec $(get_cid $name) /bin/sh -ic "${run_cmd}" 2>&1)
+  out=$($OCI_RUNTIME_TOOL exec $(get_cid $name) /bin/sh -ic "${run_cmd}" 2>&1)
   if ! echo "${out}" | grep -q "${expected}"; then
     echo "ERROR[exec /bin/sh -ic "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
@@ -226,7 +227,7 @@ run_doc_test() {
   local f
   echo "  Testing documentation in the container image"
   # Extract the help.1 file from the container
-  docker run --rm ${IMAGE_NAME} /bin/bash -c "cat /help.1" >${tmpdir}/help.1
+  $OCI_RUNTIME_TOOL run --rm ${IMAGE_NAME} /bin/bash -c "cat /help.1" >${tmpdir}/help.1
   # Check whether the help.1 file includes some important information
   for term in 6379 "REDIS\_PASSWORD" volume; do
     if ! cat ${tmpdir}/help.1 | grep -F -q -e "${term}" ; then
