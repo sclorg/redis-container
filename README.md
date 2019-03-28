@@ -33,7 +33,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     To download it run:
 
     ```
-    $ docker pull registry.access.redhat.com/rhscl/redis-32-rhel7
+    $ podman pull registry.access.redhat.com/rhscl/redis-32-rhel7
     ```
 
     To build a RHEL based Redis image, you need to run the build on a properly
@@ -51,7 +51,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     This image is available on DockerHub. To download it run:
 
     ```
-    $ docker pull centos/redis-32-centos7
+    $ podman pull centos/redis-32-centos7
     ```
 
     To build a Redis image from scratch run:
@@ -62,6 +62,8 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git submodule update --init
     $ make build TARGET=centos7 VERSIONS=3.2
     ```
+
+Note: while the installation steps are calling `podman`, you can replace any such calls by `docker` with the same arguments.
 
 **Notice: By omitting the `VERSIONS` parameter, the build/test action will be performed
 on all provided versions of Redis.**
