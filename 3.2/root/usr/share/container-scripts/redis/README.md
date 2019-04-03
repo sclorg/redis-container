@@ -2,12 +2,13 @@ Redis 3.2 in-memory data structure store container image
 ====================
 
 This container image includes Redis 3.2 in-memory data structure store for OpenShift and general usage.
-Users can choose between RHEL and CentOS based images.
-The RHEL image is available in the [Red Hat Container Catalog](https://access.redhat.com/#/registry.access.redhat.com/rhscl/redis-32-rhel7)
-as registry.access.redhat.com/rhscl/redis-32-rhel7.
-The CentOS image is then available on [Docker Hub](https://hub.docker.com/r/centos/redis-32-centos7/)
-as centos/redis-32-centos7.
+Users can choose between RHEL, CentOS and Fedora based images.
+The RHEL images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/),
+the CentOS images are available on [Docker Hub](https://hub.docker.com/r/centos/),
+and the Fedora images are available in [Fedora Registry](https://registry.fedoraproject.org/).
+The resulting image can be run using [podman](https://github.com/containers/libpod).
 
+Note: while the examples in this README are calling `podman`, you can replace any such calls by `docker` with the same arguments
 
 Description
 -----------
@@ -29,7 +30,7 @@ If you want to set only the mandatory environment variables and not store
 the database in a host directory, execute the following command:
 
 ```
-$ docker run -d --name redis_database -p 6379:6379 rhscl/redis-32-rhel7
+$ podman run -d --name redis_database -p 6379:6379 rhscl/redis-32-rhel7
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
@@ -42,7 +43,7 @@ For protecting Redis data by a password, pass `REDIS_PASSWORD` environment varia
 to the container like this:
 
 ```
-$ docker run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhscl/redis-32-rhel7
+$ podman run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhscl/redis-32-rhel7
 ```
 
 **Warning: since Redis is pretty fast an outside user can try up to
@@ -57,7 +58,7 @@ Environment variables and volumes
        Password for the server access
 
 
-You can also set the following mount points by passing the `-v /host:/container:Z` flag to Docker.
+You can also set the following mount points by passing the `-v /host:/container:Z` flag to podman.
 
 **`/var/lib/redis/data`**  
        Redis data directory
@@ -72,13 +73,13 @@ Troubleshooting
 ---------------
 Redis logs into standard output, so the log is available in the container log. The log can be examined by running:
 
-    docker logs <container>
+    podman logs <container>
 
 
 See also
 --------
 Dockerfile and other sources for this container image are available on
 https://github.com/sclorg/redis-container.
-In that repository, Dockerfile for CentOS is called Dockerfile, Dockerfile
-for RHEL is called Dockerfile.rhel7 and Dockerfile for Fedora is called Dockerfile.fedora.
-
+In that repository you also can find another versions of Python environment Dockerfiles.
+Dockerfile for CentOS is called `Dockerfile`, Dockerfile for RHEL7 is called `Dockerfile.rhel7`,
+for RHEL8 it's `Dockerfile.rhel8` and the Fedora Dockerfile is called Dockerfile.fedora.
