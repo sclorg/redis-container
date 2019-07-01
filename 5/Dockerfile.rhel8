@@ -1,4 +1,4 @@
-FROM rhel8/s2i-core
+FROM ubi8/s2i-core:1
 
 # Redis image based on Software Collections packages
 #
