@@ -28,6 +28,7 @@ LABEL summary="$SUMMARY" \
       com.redhat.component="rh-redis32-container" \
       name="rhscl/redis-32-rhel7" \
       version="3.2" \
+      com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
       usage="docker run -d --name redis_database -p 6379:6379 rhscl/redis-32-rhel7" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
