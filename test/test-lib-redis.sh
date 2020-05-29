@@ -13,9 +13,7 @@ source ${THISDIR}/test-lib-openshift.sh
 
 function test_redis_integration() {
   local image_name=$1
-  local VERSION=$2
-  local service_name=$3
-  local image_tagged="${service_name}:${VERSION}"
+  local service_name=redis
   ct_os_test_template_app_func "${image_name}" \
                                "https://raw.githubusercontent.com/openshift/origin/master/examples/db-templates/redis-ephemeral-template.json" \
                                "${service_name}" \

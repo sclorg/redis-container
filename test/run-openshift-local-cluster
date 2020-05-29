@@ -95,17 +95,18 @@ test_redis_pure_image "${IMAGE_NAME}"
 test_redis_template "${IMAGE_NAME}"
 
 # test with the just built image and an integrated template
-test_redis_integration "${IMAGE_NAME}" "${VERSION}" redis
+test_redis_integration "${IMAGE_NAME}"
 
 # test with a released image and an integrated template
-PUBLIC_IMAGE_NAME=$(ct_get_public_image_name "$OS" "$BASE_IMAGE_NAME" "$VERSION")
+PUBLIC_IMAGE_NAME=${PUBLIC_IMAGE_NAME:-$(ct_get_public_image_name "${OS}" "${BASE_IMAGE_NAME}" "${VERSION}")}
 
 # Try pulling the image first to see if it is accessible
 if ct_check_image_availability "$PUBLIC_IMAGE_NAME"; then
-  test_redis_integration "${PUBLIC_IMAGE_NAME}" "${VERSION}" redis
+  test_redis_integration "${PUBLIC_IMAGE_NAME}"
 else
-  # Do not fail on centos7 as it the image might be in the process of being added
-  [ "$OS" == "centos7" ] || false "ERROR: Failed to pull image"
+  echo "Warning: ${PUBLIC_IMAGE_NAME} could not be downloaded via 'docker'"
+  # ignore possible failure of this test for centos images
+  [ "${OS}" == "rhel7" ] && false "ERROR: Failed to pull image"
 fi
 
 # Check the imagestream
