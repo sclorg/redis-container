@@ -66,6 +66,10 @@ RUN /usr/libexec/container-setup
 
 VOLUME ["/var/lib/redis/data"]
 
+# Using a numeric value because of a comment in [1]:
+# If your S2I image does not include a USER declaration with a numeric user,
+# your builds will fail by default.
+# [1] https://docs.openshift.com/container-platform/4.4/openshift_images/create-images.html#images-create-guide-openshift_create-images
 USER 1001
 
 ENTRYPOINT ["container-entrypoint"]
