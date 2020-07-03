@@ -8,7 +8,7 @@ FROM registry.fedoraproject.org/f31/s2i-core:latest
 #  * $REDIS_PASSWORD - Database password
 
 ENV NAME=redis \
-    VERSION=5 \
+    VERSION=6 \
     RELEASE=1 \
     ARCH=x86_64
 
@@ -27,9 +27,9 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$SUMMARY" \
-      io.k8s.display-name="Redis 5" \
+      io.k8s.display-name="Redis 6" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis5" \
+      io.openshift.tags="database,redis,redis6" \
       com.redhat.component="$NAME" \
       name="$FGC/$NAME" \
       version="$VERSION" \

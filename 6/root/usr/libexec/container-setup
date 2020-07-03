@@ -5,8 +5,8 @@ set -eu
 
 # setup config file
 if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
-  mv /etc/opt/rh/rh-redis5/redis.conf /etc/redis.conf
-  ln -s /etc/redis.conf /etc/opt/rh/rh-redis5/redis.conf
+  mv /etc/opt/rh/rh-redis6/redis.conf /etc/redis.conf
+  ln -s /etc/redis.conf /etc/opt/rh/rh-redis6/redis.conf
 fi
 
 # setup directory for data
@@ -15,8 +15,8 @@ restorecon -R "${HOME}" /etc/redis.conf
 
 # create a symlink for SCL datadir, so there is some reasonable content there
 if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
-  rmdir /var/opt/rh/rh-redis5/lib/redis/
-  ln -s /var/lib/redis /var/opt/rh/rh-redis5/lib/redis
+  rmdir /var/opt/rh/rh-redis6/lib/redis/
+  ln -s /var/lib/redis /var/opt/rh/rh-redis6/lib/redis
 fi
 
 # Loosen permission bits for group to avoid problems running container with

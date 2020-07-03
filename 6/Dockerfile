@@ -7,7 +7,7 @@ FROM centos/s2i-core-centos7
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
-ENV REDIS_VERSION=5 \
+ENV REDIS_VERSION=6 \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -22,13 +22,13 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Redis 5" \
+      io.k8s.display-name="Redis 6" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis5,rh-redis5" \
-      com.redhat.component="rh-redis5-container" \
-      name="centos/redis-5-centos7" \
-      version="5" \
-      usage="podman run -d --name redis_database -p 6379:6379 centos/redis-5-centos7" \
+      io.openshift.tags="database,redis,redis6,rh-redis6" \
+      com.redhat.component="rh-redis6-container" \
+      name="centos/redis-6-centos7" \
+      version="6" \
+      usage="podman run -d --name redis_database -p 6379:6379 centos/redis-6-centos7" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
@@ -46,7 +46,7 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # Install gettext for envsubst command
     yum install -y yum-utils gettext && \
     yum install -y centos-release-scl && \
-    INSTALL_PKGS="rh-redis5" && \
+    INSTALL_PKGS="rh-redis6" && \
     yum install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum -y clean all --enablerepo='*' && \
@@ -55,8 +55,8 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/redis \
-    REDIS_PREFIX=/opt/rh/rh-redis5/root/usr \
-    ENABLED_COLLECTIONS=rh-redis5
+    REDIS_PREFIX=/opt/rh/rh-redis6/root/usr \
+    ENABLED_COLLECTIONS=rh-redis6
 
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable
