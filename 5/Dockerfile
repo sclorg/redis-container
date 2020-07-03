@@ -42,7 +42,7 @@ EXPOSE 6379
 # safe in the future. This should *never* change, the last test is there
 # to make sure of that.
 RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
-    usermod -l redis -g redis -c 'Redis Server' default &> /dev/null && \
+    usermod -l redis -aG redis -c 'Redis Server' default &> /dev/null && \
 # Install gettext for envsubst command
     yum install -y yum-utils gettext && \
     yum install -y centos-release-scl && \
