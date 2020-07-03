@@ -36,19 +36,23 @@ EXPOSE 6379
 
 # Create user for redis that has known UID
 # We need to do this before installing the RPMs which would create user with random UID
+# The UID is the one used by the default user from the parent layer (1001),
+# and since the user exists already, do not create a new one, but only rename
+# the existing
+# This image must forever use UID 1001 for redis user so our volumes are
+# safe in the future. This should *never* change, the last test is there
+# to make sure of that.
 RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
     usermod -l redis -g redis -c 'Redis Server' default &> /dev/null && \
 # Install gettext for envsubst command
-# This image must forever use UID 964 for redis user so our volumes are
-# safe in the future. This should *never* change, the last test is there
-# to make sure of that.
     yum install -y yum-utils gettext && \
     prepare-yum-repositories rhel-server-rhscl-7-rpms && \
     INSTALL_PKGS="rh-redis5" && \
     yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum -y clean all --enablerepo='*' && \
-    mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis
+    mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis && \
+    [[ "$(id redis)" == "uid=1001(redis)"* ]]
 
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/redis \
@@ -71,6 +75,10 @@ RUN /usr/libexec/container-setup
 
 VOLUME ["/var/lib/redis/data"]
 
+# Using a numeric value because of a comment in [1]:
+# If your S2I image does not include a USER declaration with a numeric user,
+# your builds will fail by default.
+# [1] https://docs.openshift.com/container-platform/4.4/openshift_images/create-images.html#images-create-guide-openshift_create-images
 USER 1001
 
 ENTRYPOINT ["container-entrypoint"]
