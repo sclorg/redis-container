@@ -14,6 +14,7 @@ Versions
 ---------------
 Redis version currently provided are:
 * [redis-5](5)
+* [redis-6](6)
 
 RHEL versions currently supported are:
 * RHEL7
@@ -73,6 +74,9 @@ Usage
 
 For information about usage of Dockerfile for Redis 5,
 see [usage documentation](5).
+
+For information about usage of Dockerfile for Redis 6,
+see [usage documentation](6).
 
 Test
 ---------------------
