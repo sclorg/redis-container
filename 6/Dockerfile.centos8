@@ -28,7 +28,6 @@ LABEL summary="$SUMMARY" \
       com.redhat.component="redis-$REDIS_VERSION-container" \
       name="centos/redis-$REDIS_VERSION-centos8" \
       version="1" \
-      com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
       usage="podman run -d --name redis_database -p 6379:6379 centos/redis-$REDIS_VERSION-centos8" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
