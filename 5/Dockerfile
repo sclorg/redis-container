@@ -1,4 +1,4 @@
-FROM centos/s2i-core-centos7
+FROM quay.io/centos7/s2i-core-centos7
 
 # Redis image based on Software Collections packages
 #
@@ -26,9 +26,9 @@ LABEL summary="$SUMMARY" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis5,rh-redis5" \
       com.redhat.component="rh-redis5-container" \
-      name="centos/redis-5-centos7" \
+      name="centos7/redis-5-centos7" \
       version="5" \
-      usage="podman run -d --name redis_database -p 6379:6379 centos/redis-5-centos7" \
+      usage="podman run -d --name redis_database -p 6379:6379 quay.io/centos7/redis-5-centos7" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
