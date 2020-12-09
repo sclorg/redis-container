@@ -5,13 +5,13 @@ set -eu
 
 # setup config file
 if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
-  mv /etc/opt/rh/rh-redis6/redis.conf /etc/redis.conf
-  ln -s /etc/redis.conf /etc/opt/rh/rh-redis6/redis.conf
+  mv /etc/opt/rh/rh-redis6/redis.conf /etc/redis/redis.conf
+  ln -s /etc/redis/redis.conf /etc/opt/rh/rh-redis6/redis.conf
 fi
 
 # setup directory for data
-chown -R redis:0 "${HOME}" /etc/redis.conf
-restorecon -R "${HOME}" /etc/redis.conf
+chown -R redis:0 "${HOME}" /etc/redis/redis.conf
+restorecon -R "${HOME}" /etc/redis/redis.conf
 
 # create a symlink for SCL datadir, so there is some reasonable content there
 if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
@@ -24,8 +24,8 @@ fi
 # When only specifying user, group is 0, that's why /var/lib/redis must have
 # owner redis.0; that allows to avoid a+rwx for this dir
 chmod 0770 "${HOME}" "${REDIS_DATADIR}"
-chmod 0660 /etc/redis.conf
+chmod 0660 /etc/redis/redis.conf
 
 # adjust config with changes we do every-time
 clear_config
-envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> /etc/redis.conf
+envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> /etc/redis/redis.conf

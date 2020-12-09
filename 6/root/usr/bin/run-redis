@@ -9,7 +9,7 @@ set -eu
 # Process the Redis configuration files
 log_info 'Processing Redis configuration files ...'
 if [[ -v REDIS_PASSWORD ]]; then
-  envsubst < ${CONTAINER_SCRIPTS_PATH}/password.conf.template >> /etc/redis.conf
+  envsubst < ${CONTAINER_SCRIPTS_PATH}/password.conf.template >> /etc/redis/redis.conf
 else
   log_info 'WARNING: setting REDIS_PASSWORD is recommended'
 fi
@@ -24,4 +24,4 @@ fi
 unset_env_vars
 log_volume_info "${REDIS_DATADIR}"
 log_info 'Running final exec -- Only Redis logs after this point'
-exec ${REDIS_PREFIX}/bin/redis-server /etc/redis.conf --daemonize no "$@" 2>&1
+exec ${REDIS_PREFIX}/bin/redis-server /etc/redis/redis.conf --daemonize no "$@" 2>&1

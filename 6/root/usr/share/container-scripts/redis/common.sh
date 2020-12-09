@@ -22,5 +22,5 @@ function clear_config() {
       -e "s/^logfile/#logfile/" \
       -e "s/^dir /#dir /" \
       -e "/^protected-mode/s/yes/no/" \
-      -i /etc/redis.conf
+      -i /etc/redis/redis.conf
 }
