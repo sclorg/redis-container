@@ -1,5 +1,8 @@
 Redis container image
-==================
+=====================
+
+Redis 5 status:[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-5-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-5-centos7), Redis 6 status:
+[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-6-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-6-centos7)
 
 This repository contains Dockerfiles for Redis container image.
 Users can choose between RHEL, Fedora and CentOS based images.
@@ -11,7 +14,7 @@ For more information about concepts used in these container images, see the
 
 
 Versions
----------------
+--------
 Redis version currently provided are:
 * [redis-5](5)
 * [redis-6](6)
@@ -25,7 +28,7 @@ CentOS versions currently supported are:
 
 
 Installation
----------------
+------------
 To build a Redis image, choose either the CentOS or RHEL based image:
 *  **RHEL based image**
 
@@ -51,7 +54,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     This image is available on DockerHub. To download it run:
 
     ```
-    $ podman pull centos/redis-5-centos7
+    $ podman pull quay.io/centos7/redis-5-centos7
     ```
 
     To build a Redis image from scratch run:
@@ -70,7 +73,7 @@ on all provided versions of Redis.**
 
 
 Usage
----------------------------------
+-----
 
 For information about usage of Dockerfile for Redis 5,
 see [usage documentation](5).
@@ -79,7 +82,7 @@ For information about usage of Dockerfile for Redis 6,
 see [usage documentation](6).
 
 Test
----------------------
+----
 Users can choose between testing a Redis test application based on a RHEL or CentOS image.
 
 *  **RHEL based image**

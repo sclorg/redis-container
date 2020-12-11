@@ -1,10 +1,10 @@
 Redis 5 in-memory data structure store container image
-====================
+======================================================
 
 This container image includes Redis 5 in-memory data structure store for OpenShift and general usage.
 Users can choose between RHEL, CentOS and Fedora based images.
 The RHEL images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/),
-the CentOS images are available on [Docker Hub](https://hub.docker.com/r/centos/),
+the CentOS images are available on [Quay.io](https://quay.io/organization/centos7),
 and the Fedora images are available in [Fedora Registry](https://registry.fedoraproject.org/).
 The resulting image can be run using [podman](https://github.com/containers/libpod).
 
@@ -52,7 +52,7 @@ use a very strong password otherwise it will be very easy to break.**
 
 
 Environment variables and volumes
-----------------------------------
+---------------------------------
 
 **`REDIS_PASSWORD`**  
        Password for the server access
