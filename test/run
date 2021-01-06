@@ -211,13 +211,21 @@ function assert_container_creation_fails() {
 
 function try_image_invalid_combinations() {
   assert_container_creation_fails -e REDIS_PASSWORD="pass with space" "$@"
+  check_result $?
 }
 
 function run_container_creation_tests() {
+  local ret
   echo "  Testing image entrypoint usage"
   try_image_invalid_combinations
-  echo "  Success!"
+  ret=$?
+  if [ $ret -eq 0 ]; then
+    echo "  Success!"
+  else
+    echo "  Failed!"
+  fi
   echo
+  return $ret
 }
 
 test_scl_usage() {
@@ -268,6 +276,7 @@ run_doc_test() {
 
 function run_tests() {
   local name=$1 ; shift
+  local ret
   envs=${PASS:+"-e REDIS_PASSWORD=$PASS"}
   PASS=${PASS:-}
   create_container $name $envs
@@ -290,10 +299,16 @@ function run_tests() {
     check_result $?
   fi
   assert_local_access "$name"
-  check_result $?
-  echo "  Success!"
+  ret=$?
+  check_result $ret
+  if [ $ret -ne 0 ]; then
+    echo "  Local access FAILED."
+  else
+    echo "  Local access SUCCESS."
+  fi
   echo
   test_redis "$container_ip" "$PASS"
+  check_result $?
 }
 
 function run_tests_no_root() {
@@ -321,6 +336,7 @@ function run_all_tests() {
     info "Running test $test_case ...."
     TESTCASE_RESULT=0
     $test_case
+    check_result $?
     local test_msg
     if [ $TESTCASE_RESULT -eq 0 ]; then
       test_msg="[PASSED]"
