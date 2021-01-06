@@ -143,6 +143,7 @@ function create_container() {
   [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
   container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
   [ "${DEBUG:-0}" -eq 1 ] && echo "Created container $container_id"
+  [ x"$container_id" == "x" ] && return 1 || return 0
 }
 
 function run_change_password_test() {
@@ -280,9 +281,11 @@ function run_tests() {
   envs=${PASS:+"-e REDIS_PASSWORD=$PASS"}
   PASS=${PASS:-}
   create_container $name $envs
-  check_result $?
+  ret=$?
+  check_result $ret
   test_connection "$name" "$PASS"
-  check_result $?
+  ret=$?
+  check_result $ret
   # Only check version on rhel/centos builds
   if [ "$OS" != "fedora" ]; then
     echo "  Testing scl usage"
@@ -293,7 +296,8 @@ function run_tests() {
   local container_ip
   container_ip=$(get_container_ip $name)
   assert_login_access "$container_ip" "$PASS" true
-  check_result $?
+  ret=$?
+  check_result $ret
   if [ -n "$PASS" ] ; then
     assert_login_access "$container_ip" "${PASS}_foo" false
     check_result $?
@@ -333,7 +337,7 @@ function run_tests_no_root_altuid() {
 
 function run_all_tests() {
   for test_case in $TEST_SET; do
-    info "Running test $test_case ...."
+    echo "Running test $test_case ...."
     TESTCASE_RESULT=0
     $test_case
     check_result $?
