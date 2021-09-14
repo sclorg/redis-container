@@ -39,13 +39,14 @@ jobs:
           BASE_IMAGE_ROW=${row/BASE_IMAGE_NAME = /}
 
           echo ::set-output name=image_name::$BASE_IMAGE_ROW
-          echo ::set-output name=versions_matrix::$VERSIONS_MATRIX
+          echo ::set-output name=versions_matrix::{\"include\":[$VERSIONS_MATRIX]}
 
   build-and-push:
     runs-on: ubuntu-latest
     needs: setup-matrix
     strategy:
-      matrix: [${{ needs.setup-matrix.outputs.versions_matrix }}]
+      matrix:
+        version: ${{ fromJson(needs.setup-matrix.outputs.versions_matrix) }}
     steps:
       - uses: actions/checkout@v2
 
