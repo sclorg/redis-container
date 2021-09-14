@@ -64,7 +64,7 @@ jobs:
           dockerfiles: Dockerfile
           image: quay.io/centos7/${{ needs.setup-matrix.outputs.image_name}}-${{ steps.short_version.outputs.SHORT_VER }}-centos7
           context: ${{ matrix.version }}
-          tags: latest, 1, ${{ github.sha }}
+          tags: latest 1 ${{ github.sha }}
 
       - name: Push CentOS7 image to Quay.io
         id: push-to-quay
