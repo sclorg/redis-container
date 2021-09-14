@@ -8,6 +8,7 @@ FROM registry.fedoraproject.org/f33/s2i-core:latest
 #  * $REDIS_PASSWORD - Database password
 
 ENV NAME=redis \
+    RELEASE=1 \
     VERSION=6
 
 ENV REDIS_VERSION=$VERSION \

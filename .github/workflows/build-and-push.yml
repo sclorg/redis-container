@@ -23,23 +23,23 @@ jobs:
           versions_row=${versions_row/VERSIONS = /}
           # Return versions, each on new row
           versions_row=$(echo $versions_row | tr " " "\n")
-          VERSIONS_MATRIX=""
+          VERSIONS_MATRIX="["
           # Result of this cycle will be VERSIONS_MATRIX=X,Y,Z,
           for row in $versions_row; do
             if [[ $row =~ "minimal" ]]; then
               continue
             fi
-            VERSIONS_MATRIX="$VERSIONS_MATRIX$row,"
+            VERSIONS_MATRIX+="{\"version\": [$row]}"
           done
-          # Remove last comma from VERSIONS_MATRIX
-          VERSIONS_MATRIX=${VERSIONS_MATRIX::-1}
+          VERSIONS_MATRIX="${VERSIONS_MATRIX//\}\{/\}, \{}"
+          VERSIONS_MATRIX+="]"
           # This command returns row with BASE_IMAGE_NAME
           row=$(grep "BASE_IMAGE_NAME" Makefile)
           # Return only base image name
           BASE_IMAGE_ROW=${row/BASE_IMAGE_NAME = /}
-
+          echo $VERSIONS_MATRIX
           echo ::set-output name=image_name::$BASE_IMAGE_ROW
-          echo ::set-output name=versions_matrix::{\"include\":[$VERSIONS_MATRIX]}
+          echo ::set-output name=versions_matrix::"{\"include\": ${VERSIONS_MATRIX}}"
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -53,7 +53,7 @@ jobs:
       - name: Get short version
         id: short_version
         run: |
-          ver="{{ matrix.version }}"
+          ver="${{ matrix.version }}"
           echo "::set-output name=SHORT_VER::${ver//./}"
       - name: Build CentOS7 image
         id: build-image
