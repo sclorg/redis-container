@@ -53,7 +53,7 @@ jobs:
       - name: Get short version
         id: short_version
         run: |
-          echo "{{ needs.setup-matrix.outputs.versions_matrix }}"
+          echo "${{ needs.setup-matrix.outputs.versions_matrix }}"
           ver="${{ matrix.version }}"
           echo "::set-output name=SHORT_VER::${ver//./}"
       - name: Build CentOS7 image
@@ -62,7 +62,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           dockerfiles: Dockerfile
-          image: quay.io/centos7/{{ needs.setup-matrix.outputs.image_name}}-{{ steps.short_version.outputs.SHORT_VER }}-centos7
+          image: quay.io/centos7/${{ needs.setup-matrix.outputs.image_name}}-${{ steps.short_version.outputs.SHORT_VER }}-centos7
           context: ${{ matrix.version }}
           tags: latest, 1, ${{ github.sha }}
 
