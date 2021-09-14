@@ -68,7 +68,7 @@ jobs:
 
       - name: Push CentOS7 image to Quay.io
         id: push-to-quay
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v2.2
         with:
           image: ${{ steps.build-image.outputs.image }}
           tags: ${{ steps.build-image.outputs.tags }}
