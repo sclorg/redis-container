@@ -61,7 +61,7 @@ jobs:
         # https://github.com/marketplace/actions/buildah-build
         uses: redhat-actions/buildah-build@v2
         with:
-          dockerfiles: Dockerfile
+          dockerfiles: ${{ matrix.version }}/Dockerfile
           image: quay.io/centos7/${{ needs.setup-matrix.outputs.image_name}}-${{ steps.short_version.outputs.SHORT_VER }}-centos7
           context: ${{ matrix.version }}
           tags: latest 1 ${{ github.sha }}
