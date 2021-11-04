@@ -113,6 +113,7 @@ jobs:
           EOF
           curl ${{ secrets.TF_ENDPOINT }}/requests --data @request.json --header "Content-Type: application/json" --output response.json
           cat response.json
+          
           # Store REQ_ID into outputs for later on usage
           echo "::set-output name=REQ_ID::$(jq -r .id response.json)"
 
@@ -139,6 +140,7 @@ jobs:
         run: |
           CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ steps.sched_test.outputs.REQ_ID }}
           curl $CMD > job.json
+          cat job.json
           state=$(jq -r .state job.json)
           # Wait till job is not finished. As soon as state is complete or failure then go to the finish action
           while [ "$state" == "running" ] || [ "$state" == "new" ] || [ "$state" == "pending" ] || [ "$state" == "queued" ]; do
