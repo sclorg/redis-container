@@ -69,7 +69,7 @@ jobs:
             "sha": "${{ steps.sha_value.outputs.SHA }}",
             "state": "pending",
             "context": "Testing Farm - ${{ matrix.context }}",
-            "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.req_id }}"
+            "target_url": "${{ matrix.tmt_url }}"
           }
           EOF
           echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha_value.outputs.SHA }}"
@@ -115,7 +115,8 @@ jobs:
           cat response.json
           
           # Store REQ_ID into outputs for later on usage
-          echo "::set-output name=REQ_ID::$(jq -r .id response.json)"
+          req_id=$(jq -r .id response.json)
+          echo "REQ_ID=$req_id" >> $GITHUB_ENV
 
       - name: Switch to running state of Testing Farm request
         id: running
@@ -127,7 +128,7 @@ jobs:
             "state": "pending",
             "context": "Testing Farm - ${{ matrix.context }}",
             "description": "Build started",
-            "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.REQ_ID }}"
+            "target_url": "${{ matrix.tmt_url }}/${{ env.REQ_ID }}"
           }
           EOF
           # Update GitHub status description to 'Build started'
@@ -138,7 +139,7 @@ jobs:
       - name: Check test is still running
         id: still_running
         run: |
-          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ steps.sched_test.outputs.REQ_ID }}
+          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ env.REQ_ID }}
           curl $CMD > job.json
           cat job.json
           state=$(jq -r .state job.json)
@@ -153,7 +154,7 @@ jobs:
       - name: Get final state of Testing Farm request
         id: final_state
         run: |
-          curl ${{ secrets.TF_ENDPOINT }}/requests/${{ steps.sched_test.outputs.REQ_ID }} > job.json
+          curl ${{ secrets.TF_ENDPOINT }}/requests/${{ env.REQ_ID }} > job.json
           cat job.json
           state=$(jq -r .state job.json)
           result=$(jq -r .result.overall job.json)
@@ -182,7 +183,7 @@ jobs:
             "state": "${{ steps.final_state.outputs.FINAL_STATE }}",
             "context": "Testing Farm - ${{ matrix.context }}",
             "description": "Build finished${{ steps.final_state.outputs.INFRA_STATE }}",
-            "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.REQ_ID }}"
+            "target_url": "${{ matrix.tmt_url }}/${{ env.REQ_ID }}"
           }
           EOF
           cat final.json
