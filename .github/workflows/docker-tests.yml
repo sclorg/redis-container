@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     # This job only runs for '[test]' pull request comments by owner, member
-    name: Schedule test on Testing Farm service
+    name: Docker tests on Testing Farm service
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -41,11 +41,6 @@ jobs:
       github.event.issue.pull_request
       && (contains(github.event.comment.body, '[test]') || contains(github.event.comment.body, '[test-all]'))
       && contains(fromJson('["OWNER", "MEMBER"]'), github.event.comment.author_association)
-    outputs:
-      REQ_ID: ${{ steps.sched_test.outputs.REQ_ID }}
-      SHA: ${{ steps.val_matrix.outputs.SHA }}
-      CONTEXT: ${{ steps.val_matrix.output.CONTEXT }}
-      TMT_URL: ${{ steps.val_matrix.output.TMT_URL }}
     steps:
       - name: Get pull request number
         id: pr_nr
@@ -58,11 +53,9 @@ jobs:
         with:
           ref: "refs/pull/${{ steps.pr_nr.outputs.PR_NR }}/head"
 
-      - name: Remember matrix values
-        id: val_matrix
+      - name: SHA value
+        id: sha_value
         run: |
-          echo "::set-output name=CONTEXT::{{ matrix.context }}"
-          echo "::set-output name=TMT_URL::{{ matrix.tmt_url }}"
           echo "::set-output name=SHA::$(git rev-parse HEAD)"
 
       - name: Create status check to pending
@@ -73,17 +66,17 @@ jobs:
           # Create a JSON file for Testing Farm in order to schedule a CI testing job
           cat << EOF > pending.json
           {
-            "sha": "${{ steps.sha.outputs.SHA }}",
+            "sha": "${{ steps.sha_value.outputs.SHA }}",
             "state": "pending",
             "context": "Testing Farm - ${{ matrix.context }}",
             "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.req_id }}"
           }
           EOF
-          echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.val_matrix.outputs.SHA }}"
+          echo "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha_value.outputs.SHA }}"
           # GITHUB_TOKEN is used for updating pull request status.
           # It is provided by GitHub https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
           curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.val_matrix.outputs.SHA }} \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha_value.outputs.SHA }} \
             --data @pending.json
           echo "::set-output name=GITHUB_REPOSITORY::$GITHUB_REPOSITORY"
 
@@ -91,7 +84,7 @@ jobs:
         id: sched_test
         run: |
           # Update ubuntu-20.04 in order to install curl and jq
-          apt update && apt -y install curl jq
+          sudo apt update && sudo apt -y install curl jq
           if [ "${{ matrix.tmt_plan }}" == "fedora" ] || [ "${{ matrix.tmt_plan }}" == "centos7" ]; then
             api_key="${{ secrets.TF_PUBLIC_API_KEY }}"
           else
@@ -119,32 +112,9 @@ jobs:
           }
           EOF
           curl ${{ secrets.TF_ENDPOINT }}/requests --data @request.json --header "Content-Type: application/json" --output response.json
+          cat response.json
           # Store REQ_ID into outputs for later on usage
           echo "::set-output name=REQ_ID::$(jq -r .id response.json)"
-
-  running:
-    needs: build
-    name: Check running tests on Testing Farm service
-    runs-on: ubuntu-20.04
-
-    outputs:
-      REQ_ID: ${{ steps.values.outputs.REQ_ID }}
-      SHA: ${{ steps.values.outputs.SHA }}
-      CONTEXT: ${{ steps.values.output.CONTEXT }}
-      TMT_URL: ${{ steps.values.output.TMT_URL }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Check if REQ_ID and SHA exists
-        id: values
-        run: |
-          # Update ubuntu-20.04 in order to install curl and jq
-          # each job is separate machine
-          apt update && apt -y install curl jq
-          # Propagate REQ_ID and SHA into the finish section
-          echo "::set-output name=REQ_ID::${{ needs.build.outputs.REQ_ID }}"
-          echo "::set-output name=SHA::${{ needs.build.outputs.SHA }}"
-          echo "::set-output name=CONTEXT::{{ needs.build.outputs.CONTEXT }}"
-          echo "::set-output name=TMT_URL::{{ needs.build.outputs.TMT_URL }}"
 
       - name: Switch to running state of Testing Farm request
         id: running
@@ -152,22 +122,22 @@ jobs:
           # Create running.json file for query, whether job is finished or not.
           cat << EOF > running.json
           {
-            "sha": "${{ needs.build.outputs.SHA }}",
+            "sha": "${{ steps.sha_value.outputs.SHA }}",
             "state": "pending",
-            "context": "Testing Farm - ${{ needs.build.outputs.CONTEXT }}",
+            "context": "Testing Farm - ${{ matrix.context }}",
             "description": "Build started",
-            "target_url": "${{ needs.build.outputs.TMT_URL }}/${{ needs.build.outputs.REQ_ID }}"
+            "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.REQ_ID }}"
           }
           EOF
           # Update GitHub status description to 'Build started'
           curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ needs.build.outputs.SHA }} \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha_value.outputs.SHA }} \
             --data @running.json
 
       - name: Check test is still running
         id: still_running
         run: |
-          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ needs.build.outputs.REQ_ID }}
+          CMD=${{ secrets.TF_ENDPOINT }}/requests/${{ steps.sched_test.outputs.REQ_ID }}
           curl $CMD > job.json
           state=$(jq -r .state job.json)
           # Wait till job is not finished. As soon as state is complete or failure then go to the finish action
@@ -178,24 +148,10 @@ jobs:
             state=$(jq -r .state job.json)
           done
 
-  finish:
-    needs: running
-    name: Tests are finished - switching to proper state
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Check if REQ_ID exists
-        run: echo "${{ needs.running.outputs.REQ_ID }}"
-
-      - name: Check if SHA exists
-        run: echo "${{ needs.running.outputs.SHA }}"
-
       - name: Get final state of Testing Farm request
         id: final_state
         run: |
-          # Update ubuntu-20.04 in order to install curl and jq
-          # each job is separate machine
-          apt update && apt -y install curl jq
-          curl ${{ secrets.TF_ENDPOINT }}/requests/${{ needs.running.outputs.REQ_ID }} > job.json
+          curl ${{ secrets.TF_ENDPOINT }}/requests/${{ steps.sched_test.outputs.REQ_ID }} > job.json
           cat job.json
           state=$(jq -r .state job.json)
           result=$(jq -r .result.overall job.json)
@@ -220,15 +176,15 @@ jobs:
         run: |
           cat << EOF > final.json
           {
-            "sha": "${{ needs.running.outputs.SHA }}",
+            "sha": "${{ steps.sha_value.outputs.SHA }}",
             "state": "${{ steps.final_state.outputs.FINAL_STATE }}",
-            "context": "Testing Farm - ${{ needs.running.outputs.CONTEXT }}",
+            "context": "Testing Farm - ${{ matrix.context }}",
             "description": "Build finished${{ steps.final_state.outputs.INFRA_STATE }}",
-            "target_url": "${{ needs.running.outputs.TMT_URL }}/${{ needs.running.outputs.REQ_ID }}"
+            "target_url": "${{ matrix.tmt_url }}/${{ steps.sched_test.outputs.REQ_ID }}"
           }
           EOF
           cat final.json
           # Switch Github status to proper state
           curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ needs.running.outputs.SHA }} \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ steps.sha_value.outputs.SHA }} \
             --data @final.json
