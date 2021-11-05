@@ -91,15 +91,17 @@ jobs:
           sudo apt update && sudo apt -y install curl jq
           if [ "${{ matrix.tmt_plan }}" == "fedora" ] || [ "${{ matrix.tmt_plan }}" == "centos7" ]; then
             api_key="${{ secrets.TF_PUBLIC_API_KEY }}"
+            branch_name="main"
           else
             api_key="${{ secrets.TF_INTERNAL_API_KEY }}"
+            branch_name="master"
           fi
           cat << EOF > request.json
           {
             "api_key": "$api_key",
             "test": {"fmf": {
               "url": "${{ matrix.tmt_repo }}",
-              "ref": "master",
+              "ref": "$branch_name",
               "name": "${{ matrix.tmt_plan }}"
             }},
             "environments": [{
