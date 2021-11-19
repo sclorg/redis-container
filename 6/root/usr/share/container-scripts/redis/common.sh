@@ -7,6 +7,11 @@ source ${CONTAINER_SCRIPTS_PATH}/helpers.sh
 # volume to override it.
 export REDIS_DATADIR=/var/lib/redis/data
 
+REDIS_CONF="/etc/redis/redis.conf"
+if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
+  REDIS_CONF="/etc/redis.conf"
+fi
+
 # Be paranoid and stricter than we should be.
 redis_password_regex='^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$'
 
@@ -22,5 +27,5 @@ function clear_config() {
       -e "s/^logfile/#logfile/" \
       -e "s/^dir /#dir /" \
       -e "/^protected-mode/s/yes/no/" \
-      -i /etc/redis/redis.conf
+      -i "${REDIS_CONF}"
 }
