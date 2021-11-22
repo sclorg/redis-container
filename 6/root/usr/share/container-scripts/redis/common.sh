@@ -8,7 +8,16 @@ source ${CONTAINER_SCRIPTS_PATH}/helpers.sh
 export REDIS_DATADIR=/var/lib/redis/data
 
 REDIS_CONF="/etc/redis/redis.conf"
-if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
+if [ -n "${ENABLED_COLLECTIONS:-}" ]; then
+  REDIS_CONF="/etc/redis.conf"
+fi
+
+# We have to detect if Dockerfile is Fedora or RHEL8
+# The configuration file is on different location
+# For Fedora is on the location /etc/redis/redis.conf
+# For RHEL8 is on the location /etc/redis.conf
+
+if [ -n "${OS_SYSTEM:-}" ]; then
   REDIS_CONF="/etc/redis.conf"
 fi
 
