@@ -56,7 +56,8 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
 # Get prefix path and path to scripts rather than hard-code them in scripts
 ENV CONTAINER_SCRIPTS_PATH=/usr/share/container-scripts/redis \
     REDIS_PREFIX=/opt/rh/rh-redis6/root/usr \
-    ENABLED_COLLECTIONS=rh-redis6
+    ENABLED_COLLECTIONS=rh-redis6 \
+    REDIS_CONF=/etc/redis.conf
 
 # When bash is started non-interactively, to run a shell script, for example it
 # looks for this variable and source the content of this file. This will enable

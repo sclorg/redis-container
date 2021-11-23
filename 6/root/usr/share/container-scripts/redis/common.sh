@@ -7,20 +7,6 @@ source ${CONTAINER_SCRIPTS_PATH}/helpers.sh
 # volume to override it.
 export REDIS_DATADIR=/var/lib/redis/data
 
-REDIS_CONF="/etc/redis/redis.conf"
-if [ -n "${ENABLED_COLLECTIONS:-}" ]; then
-  REDIS_CONF="/etc/redis.conf"
-fi
-
-# We have to detect if Dockerfile is Fedora or RHEL8
-# The configuration file is on different location
-# For Fedora is on the location /etc/redis/redis.conf
-# For RHEL8 is on the location /etc/redis.conf
-
-if [ -n "${OS_SYSTEM:-}" ]; then
-  REDIS_CONF="/etc/redis.conf"
-fi
-
 # Be paranoid and stricter than we should be.
 redis_password_regex='^[a-zA-Z0-9_~!@#$%^&*()-=<>,.?;:|]+$'
 
