@@ -9,7 +9,6 @@ FROM registry.fedoraproject.org/f31/s2i-core:latest
 
 ENV NAME=redis \
     VERSION=5 \
-    RELEASE=1 \
     ARCH=x86_64
 
 ENV REDIS_VERSION=$VERSION \
@@ -33,7 +32,6 @@ LABEL summary="$SUMMARY" \
       com.redhat.component="$NAME" \
       name="$FGC/$NAME" \
       version="$VERSION" \
-      release="$RELEASE.$DISTTAG" \
       architecture="$ARCH" \
       usage="docker run -d --name redis_database -p 6379:6379 $FGC/$NAME" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
