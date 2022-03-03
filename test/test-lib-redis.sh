@@ -13,9 +13,8 @@ source ${THISDIR}/test-lib-openshift.sh
 source ${THISDIR}/test-lib-remote-openshift.sh
 
 function test_redis_integration() {
-  local image_name=$1
   local service_name=redis
-  ct_os_test_template_app_func "${image_name}" \
+  ct_os_test_template_app_func "${IMAGE_NAME}" \
                                "https://raw.githubusercontent.com/openshift/origin/master/examples/db-templates/redis-ephemeral-template.json" \
                                "${service_name}" \
                                "ct_os_check_cmd_internal '<SAME_IMAGE>' '${service_name}-testing' 'timeout 15 redis-cli -h <IP> -a testp ping' 'PONG'" \
