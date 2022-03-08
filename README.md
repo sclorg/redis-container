@@ -1,7 +1,7 @@
 Redis container image
 =====================
 
-Redis 5 status:[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-5-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-5-centos7), Redis 6 status:
+Redis 6 status:
 [![Docker Repository on Quay](https://quay.io/repository/centos7/redis-6-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-6-centos7)
 
 This repository contains Dockerfiles for Redis container image.
@@ -16,7 +16,6 @@ For more information about concepts used in these container images, see the
 Versions
 --------
 Redis version currently provided are:
-* [redis-5](5)
 * [redis-6](6)
 
 RHEL versions currently supported are:
@@ -46,7 +45,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=rhel7 VERSIONS=5
+    $ make build TARGET=rhel7 VERSIONS=6
     ```
 
 *  **CentOS based image**
@@ -63,7 +62,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=centos7 VERSIONS=5
+    $ make build TARGET=centos7 VERSIONS=6
     ```
 
 Note: while the installation steps are calling `podman`, you can replace any such calls by `docker` with the same arguments.
@@ -74,9 +73,6 @@ on all provided versions of Redis.**
 
 Usage
 -----
-
-For information about usage of Dockerfile for Redis 5,
-see [usage documentation](5).
 
 For information about usage of Dockerfile for Redis 6,
 see [usage documentation](6).
@@ -93,7 +89,7 @@ Users can choose between testing a Redis test application based on a RHEL or Cen
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=rhel7 VERSIONS=5
+    $ make test TARGET=rhel7 VERSIONS=6
     ```
 
 *  **CentOS based image**
@@ -101,7 +97,7 @@ Users can choose between testing a Redis test application based on a RHEL or Cen
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=centos7 VERSIONS=5
+    $ make test TARGET=centos7 VERSIONS=6
     ```
 
 **Notice: By omitting the `VERSIONS` parameter, the build/test action will be performed
