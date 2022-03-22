@@ -28,24 +28,6 @@ run_doc_test
 THISDIR=$(dirname ${BASH_SOURCE[0]})
 source "${THISDIR}"/test-lib.sh
 
-check_result() {
-  local result="$1"
-  if [[ "$result" != "0" ]]; then
-    TESTCASE_RESULT=1
-  fi
-  return $result
-}
-
-function get_cid() {
-  local id="$1" ; shift || return 1
-  echo $(cat "$CID_FILE_DIR/$id")
-}
-
-function get_container_ip() {
-  local id="$1" ; shift
-  docker inspect --format='{{.NetworkSettings.IPAddress}}' $(get_cid "$id")
-}
-
 function connection_works() {
   local container_ip="$1"; shift
   local password="$1"; shift
@@ -66,7 +48,7 @@ function test_connection() {
   local name=$1 ; shift
   local password=$1 ; shift
   local ip
-  ip=$(get_container_ip $name)
+  ip=$(ct_get_cip $name)
   echo "  Testing Redis connection to $ip (password='${password:-}')..."
   local max_attempts=10
   local sleep_time=2
@@ -81,7 +63,7 @@ function test_connection() {
     sleep $sleep_time
   done
   echo "  Giving up: Failed to connect. Logs:"
-  docker logs $(get_cid $name)
+  docker logs $(ct_get_cid $name)
   return 1
 }
 
@@ -91,9 +73,9 @@ function test_redis() {
 
   echo "  Testing Redis (password='${password:-}')"
   redis_cmd "$container_ip" "$password" set a 1 >/dev/null
-  check_result $?
+  ct_check_testcase_result $?
   redis_cmd "$container_ip" "$password" set b 2 >/dev/null
-  check_result $?
+  ct_check_testcase_result $?
   test "$(redis_cmd "$container_ip" "$password" get b)" == '2'
   echo "  Success!"
   echo
@@ -117,21 +99,21 @@ function run_change_password_test() {
   # Create Redis container with persistent volume and set the initial password
   create_container "testpass1" -e REDIS_PASSWORD=foo \
     -v ${tmpdir}:/var/lib/redis/data:Z
-  check_result $?
+  ct_check_testcase_result $?
   test_connection testpass1 foo
-  check_result $?
-  docker stop $(get_cid testpass1) >/dev/null
+  ct_check_testcase_result $?
+  docker stop $(ct_get_cid testpass1) >/dev/null
 
   # Create second container with changed password
   create_container "testpass2" -e REDIS_PASSWORD=bar \
     -v ${tmpdir}:/var/lib/redis/data:Z
-  check_result $?
+  ct_check_testcase_result $?
   test_connection testpass2 bar
-  check_result $?
+  ct_check_testcase_result $?
   # The old password should not work anymore
-  container_ip="$(get_container_ip testpass2)"
+  container_ip="$(ct_get_cip testpass2)"
   connection_works "$container_ip" bar
-  check_result $?
+  ct_check_testcase_result $?
 }
 
 function assert_login_access() {
@@ -156,7 +138,7 @@ function assert_login_access() {
 
 function assert_local_access() {
   local id="$1" ; shift
-  docker exec $(get_cid "$id") bash -c 'redis-cli ping'
+  docker exec $(ct_get_cid "$id") bash -c 'redis-cli ping'
 }
 
 # Make sure the invocation of docker run fails.
@@ -176,7 +158,7 @@ function assert_container_creation_fails() {
 
 function try_image_invalid_combinations() {
   assert_container_creation_fails -e REDIS_PASSWORD="pass with space" "$@"
-  check_result $?
+  ct_check_testcase_result $?
 }
 
 function run_container_creation_tests() {
@@ -205,12 +187,12 @@ test_scl_usage() {
     echo "ERROR[/bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
   fi
-  out=$(docker exec $(get_cid $name) /bin/bash -c "${run_cmd}" 2>&1)
+  out=$(docker exec $(ct_get_cid $name) /bin/bash -c "${run_cmd}" 2>&1)
   if ! echo "${out}" | grep -q "${expected}"; then
     echo "ERROR[exec /bin/bash -c "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
   fi
-  out=$(docker exec $(get_cid $name) /bin/sh -ic "${run_cmd}" 2>&1)
+  out=$(docker exec $(ct_get_cid $name) /bin/sh -ic "${run_cmd}" 2>&1)
   if ! echo "${out}" | grep -q "${expected}"; then
     echo "ERROR[exec /bin/sh -ic "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
@@ -218,25 +200,8 @@ test_scl_usage() {
 }
 
 run_doc_test() {
-  local tmpdir=$(mktemp -d)
-  local f
-  echo "  Testing documentation in the container image"
-  # Extract the help.1 file from the container
-  docker run --rm ${IMAGE_NAME} /bin/bash -c "cat /help.1" >${tmpdir}/help.1
-  # Check whether the help.1 file includes some important information
-  for term in 6379 "REDIS.{1,2}PASSWORD" volume; do
-    if ! cat ${tmpdir}/help.1 | grep -E -q -e "${term}" ; then
-      echo "ERROR: File /help.1 does not include '${term}'."
-      return 1
-    fi
-  done
-  # Check whether the file uses the correct format
-  if ! file ${tmpdir}/help.1 | grep -q roff ; then
-    echo "ERROR: /help.1 is not in troff or groff format"
-    return 1
-  fi
-  echo "  Success!"
-  echo
+  ct_doc_content_old 6379 "REDIS.*PASSWORD" volume
+  return $?
 }
 
 function run_tests() {
@@ -246,29 +211,29 @@ function run_tests() {
   PASS=${PASS:-}
   create_container $name $envs
   ret=$?
-  check_result $ret
+  ct_check_testcase_result $ret
   test_connection "$name" "$PASS"
   ret=$?
-  check_result $ret
+  ct_check_testcase_result $ret
   # Only check version on rhel/centos builds
   if [ "$OS" != "fedora" ]; then
     echo "  Testing scl usage"
     test_scl_usage $name 'redis-server --version' "$VERSION"
-    check_result $?
+    ct_check_testcase_result $?
   fi
   echo "  Testing login accesses"
   local container_ip
-  container_ip=$(get_container_ip $name)
+  container_ip=$(ct_get_cip $name)
   assert_login_access "$container_ip" "$PASS" true
   ret=$?
-  check_result $ret
+  ct_check_testcase_result $ret
   if [ -n "$PASS" ] ; then
     assert_login_access "$container_ip" "${PASS}_foo" false
-    check_result $?
+    ct_check_testcase_result $?
   fi
   assert_local_access "$name"
   ret=$?
-  check_result $ret
+  ct_check_testcase_result $ret
   if [ $ret -ne 0 ]; then
     echo "  Local access FAILED."
   else
@@ -276,7 +241,7 @@ function run_tests() {
   fi
   echo
   test_redis "$container_ip" "$PASS"
-  check_result $?
+  ct_check_testcase_result $?
 }
 
 function run_tests_no_root() {
@@ -302,3 +267,4 @@ function run_tests_no_root_altuid() {
 ct_init
 
 TEST_SET=${TESTS:-$TEST_LIST} ct_run_tests_from_testset "redis_tests"
+# vim: set tabstop=2:shiftwidth=2:expandtab:
