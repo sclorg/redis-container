@@ -1,6 +1,8 @@
 Redis container image
 =====================
 
+[![Build and push images to Quay.io registry](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml)
+
 Redis 5 status:[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-5-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-5-centos7), Redis 6 status:
 [![Docker Repository on Quay](https://quay.io/repository/centos7/redis-6-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-6-centos7)
 
