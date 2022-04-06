@@ -82,4 +82,5 @@ Dockerfile and other sources for this container image are available on
 https://github.com/sclorg/redis-container.
 In that repository you also can find another versions of Python environment Dockerfiles.
 Dockerfile for CentOS is called `Dockerfile`, Dockerfile for RHEL7 is called `Dockerfile.rhel7`,
-for RHEL8 it's `Dockerfile.rhel8` and the Fedora Dockerfile is called Dockerfile.fedora.
+for RHEL8 it's `Dockerfile.rhel8`, for CentOS Stream 8 it's `Dockerfile.c8s`,
+for CentOS Stream 9 it's `Dockerfile.c9s` and the Fedora Dockerfile is called Dockerfile.fedora.
