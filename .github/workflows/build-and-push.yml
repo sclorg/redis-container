@@ -53,3 +53,4 @@ jobs:
           docker_context: ${{ matrix.dockerfile_path }}
           dockerfile_path: ${{ matrix.dockerfile_path }}
           tag: ${{ matrix.tag }}
+          suffix: ${{ matrix.suffix }}
