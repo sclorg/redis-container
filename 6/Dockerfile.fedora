@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/f33/s2i-core:latest
+FROM quay.io/fedora/s2i-core:34
 
 # Redis image based on Software Collections packages
 #
@@ -29,9 +29,9 @@ LABEL summary="$SUMMARY" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis6" \
       com.redhat.component="$NAME" \
-      name="$FGC/$NAME" \
+      name="fedora/$NAME-$VERSION" \
       version="$VERSION" \
-      usage="docker run -d --name redis_database -p 6379:6379 $FGC/$NAME" \
+      usage="docker run -d --name redis_database -p 6379:6379 quay.io/fedora/$NAME-$VERSION" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
