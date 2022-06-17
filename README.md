@@ -3,8 +3,13 @@ Redis container image
 
 [![Build and push images to Quay.io registry](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml)
 
-Redis 5 status:[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-5-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-5-centos7), Redis 6 status:
-[![Docker Repository on Quay](https://quay.io/repository/centos7/redis-6-centos7/status "Docker Repository on Quay")](https://quay.io/repository/centos7/redis-6-centos7)
+Images available on Quay are:
+* CentOS 7 [redis-5](https://quay.io/repository/centos7/redis-5-centos7)
+* CentOS 7 [redis-6](https://quay.io/repository/centos7/redis-6-centos7)
+* CentOS Stream 8 [redis-5](https://quay.io/repository/sclorg/redis-5-c8s)
+* CentOS Stream 8 [redis-6](https://quay.io/repository/sclorg/redis-6-c8s)
+* CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
+* Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
 
 This repository contains Dockerfiles for Redis container image.
 Users can choose between RHEL, Fedora and CentOS based images.
@@ -24,6 +29,7 @@ Redis version currently provided are:
 RHEL versions currently supported are:
 * RHEL7
 * RHEL8
+* RHEL9
 
 CentOS versions currently supported are:
 * CentOS7

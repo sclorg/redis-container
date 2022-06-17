@@ -5,7 +5,7 @@ This container image includes Redis 6 in-memory data structure store for OpenShi
 Users can choose between RHEL, CentOS and Fedora based images.
 The RHEL images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/),
 the CentOS images are available on [Quay.io](https://quay.io/organization/centos7),
-and the Fedora images are available in [Fedora Registry](https://registry.fedoraproject.org/).
+and the Fedora images are available in [Fedora Registry](https://quay.io/organization/fedora).
 The resulting image can be run using [podman](https://github.com/containers/libpod).
 
 Note: while the examples in this README are calling `podman`, you can replace any such calls by `docker` with the same arguments
@@ -82,5 +82,5 @@ Dockerfile and other sources for this container image are available on
 https://github.com/sclorg/redis-container.
 In that repository you also can find another versions of Python environment Dockerfiles.
 Dockerfile for CentOS is called `Dockerfile`, Dockerfile for RHEL7 is called `Dockerfile.rhel7`,
-for RHEL8 it's `Dockerfile.rhel8`, for CentOS Stream 8 it's `Dockerfile.c8s`,
+for RHEL8 it's `Dockerfile.rhel8`, for RHEL9 it's `Dockerfile.rhel9`, for CentOS Stream 8 it's `Dockerfile.c8s`,
 for CentOS Stream 9 it's `Dockerfile.c9s` and the Fedora Dockerfile is called Dockerfile.fedora.
