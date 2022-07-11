@@ -4,9 +4,7 @@ Redis container image
 [![Build and push images to Quay.io registry](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml)
 
 Images available on Quay are:
-* CentOS 7 [redis-5](https://quay.io/repository/centos7/redis-5-centos7)
 * CentOS 7 [redis-6](https://quay.io/repository/centos7/redis-6-centos7)
-* CentOS Stream 8 [redis-5](https://quay.io/repository/sclorg/redis-5-c8s)
 * CentOS Stream 8 [redis-6](https://quay.io/repository/sclorg/redis-6-c8s)
 * CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
 * Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
@@ -23,7 +21,6 @@ For more information about concepts used in these container images, see the
 Versions
 --------
 Redis version currently provided are:
-* [redis-5](5)
 * [redis-6](6)
 
 RHEL versions currently supported are:
@@ -42,11 +39,11 @@ Installation
 To build a Redis image, choose either the CentOS or RHEL based image:
 *  **RHEL based image**
 
-    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhscl/redis-5-rhel7).
+    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhscl/redis-6-rhel7).
     To download it run:
 
     ```
-    $ podman pull registry.access.redhat.com/rhscl/redis-5-rhel7
+    $ podman pull registry.access.redhat.com/rhscl/redis-6-rhel7
     ```
 
     To build a RHEL based Redis image, you need to run the build on a properly
@@ -64,7 +61,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     This image is available on DockerHub. To download it run:
 
     ```
-    $ podman pull quay.io/centos7/redis-5-centos7
+    $ podman pull quay.io/centos7/redis-6-centos7
     ```
 
     To build a Redis image from scratch run:
@@ -73,7 +70,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=centos7 VERSIONS=5
+    $ make build TARGET=centos7 VERSIONS=6
     ```
 
 Note: while the installation steps are calling `podman`, you can replace any such calls by `docker` with the same arguments.
@@ -84,9 +81,6 @@ on all provided versions of Redis.**
 
 Usage
 -----
-
-For information about usage of Dockerfile for Redis 5,
-see [usage documentation](5).
 
 For information about usage of Dockerfile for Redis 6,
 see [usage documentation](6).
@@ -103,7 +97,7 @@ Users can choose between testing a Redis test application based on a RHEL or Cen
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=rhel7 VERSIONS=5
+    $ make test TARGET=rhel7 VERSIONS=6
     ```
 
 *  **CentOS based image**
@@ -111,7 +105,7 @@ Users can choose between testing a Redis test application based on a RHEL or Cen
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=centos7 VERSIONS=5
+    $ make test TARGET=centos7 VERSIONS=6
     ```
 
 **Notice: By omitting the `VERSIONS` parameter, the build/test action will be performed
