@@ -53,7 +53,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=rhel7 VERSIONS=5
+    $ make build TARGET=rhel7 VERSIONS=6
     ```
 
 *  **CentOS based image**
