@@ -228,8 +228,8 @@ run_doc_test() {
   # Extract the help.1 file from the container
   docker run --rm ${IMAGE_NAME} /bin/bash -c "cat /help.1" >${tmpdir}/help.1
   # Check whether the help.1 file includes some important information
-  for term in 6379 "REDIS\_PASSWORD" volume; do
-    if ! cat ${tmpdir}/help.1 | grep -F -q -e "${term}" ; then
+  for term in 6379 "REDIS.{1,2}PASSWORD" volume; do
+    if ! cat ${tmpdir}/help.1 | grep -E -q -e "${term}" ; then
       echo "ERROR: File /help.1 does not include '${term}'."
       return 1
     fi
