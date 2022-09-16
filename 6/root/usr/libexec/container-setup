@@ -1,0 +1,31 @@
+#!/bin/bash
+
+source ${CONTAINER_SCRIPTS_PATH}/common.sh
+set -eu
+
+# setup config file
+if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
+  mv /etc/opt/rh/rh-redis6/redis.conf "${REDIS_CONF}"
+  ln -s "${REDIS_CONF}" /etc/opt/rh/rh-redis6/redis.conf
+fi
+
+# setup directory for data
+chown -R redis:0 "${HOME}" "${REDIS_CONF}"
+restorecon -R "${HOME}" "${REDIS_CONF}"
+
+# create a symlink for SCL datadir, so there is some reasonable content there
+if [ -n "${ENABLED_COLLECTIONS:-}" ] ; then
+  rmdir /var/opt/rh/rh-redis6/lib/redis/
+  ln -s /var/lib/redis /var/opt/rh/rh-redis6/lib/redis
+fi
+
+# Loosen permission bits for group to avoid problems running container with
+# arbitrary UID
+# When only specifying user, group is 0, that's why /var/lib/redis must have
+# owner redis.0; that allows to avoid a+rwx for this dir
+chmod 0770 "${HOME}" "${REDIS_DATADIR}"
+chmod 0660 "${REDIS_CONF}"
+
+# adjust config with changes we do every-time
+clear_config
+envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> "${REDIS_CONF}"
