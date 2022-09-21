@@ -7,7 +7,7 @@ FROM ubi9/s2i-core:1
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
-ENV REDIS_VERSION=6 \
+ENV REDIS_VERSION=7 \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \

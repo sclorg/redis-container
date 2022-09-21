@@ -1,6 +1,6 @@
 # Variables are documented in common/build.sh.
 BASE_IMAGE_NAME = redis
-VERSIONS = 6
+VERSIONS = 6 7
 OPENSHIFT_NAMESPACES = 
 
 # HACK:  Ensure that 'git pull' for old clones doesn't cause confusion.

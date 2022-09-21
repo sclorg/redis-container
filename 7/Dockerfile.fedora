@@ -1,4 +1,4 @@
-FROM quay.io/fedora/s2i-core:34
+FROM quay.io/fedora/s2i-core:37
 
 # Redis image based on Software Collections packages
 #
@@ -8,7 +8,7 @@ FROM quay.io/fedora/s2i-core:34
 #  * $REDIS_PASSWORD - Database password
 
 ENV NAME=redis \
-    VERSION=6
+    VERSION=7
 
 ENV REDIS_VERSION=$VERSION \
     HOME=/var/lib/redis
@@ -25,9 +25,9 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$SUMMARY" \
-      io.k8s.display-name="Redis 6" \
+      io.k8s.display-name="Redis 7" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis6" \
+      io.openshift.tags="database,redis,redis7" \
       com.redhat.component="$NAME" \
       name="fedora/$NAME-$VERSION" \
       version="$VERSION" \

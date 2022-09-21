@@ -7,7 +7,7 @@ FROM quay.io/sclorg/s2i-core-c8s:c8s
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
-ENV REDIS_VERSION=6 \
+ENV REDIS_VERSION=7 \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
