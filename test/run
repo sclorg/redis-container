@@ -134,7 +134,7 @@ function run_change_password_test() {
   check_result $?
   # The old password should not work anymore
   container_ip="$(get_container_ip testpass2)"
-  connection_works "$container_ip" foo
+  connection_works "$container_ip" bar
   check_result $?
 }
 
