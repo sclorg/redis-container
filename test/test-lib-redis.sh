@@ -8,9 +8,9 @@
 
 THISDIR=$(dirname ${BASH_SOURCE[0]})
 
-source ${THISDIR}/test-lib.sh
-source ${THISDIR}/test-lib-openshift.sh
-source ${THISDIR}/test-lib-remote-openshift.sh
+source "${THISDIR}/test-lib.sh"
+source "${THISDIR}/test-lib-openshift.sh"
+source "${THISDIR}/test-lib-remote-openshift.sh"
 
 function test_redis_integration() {
   local service_name=redis
@@ -26,14 +26,16 @@ function test_redis_integration() {
 # Check the imagestream
 function test_redis_imagestream() {
   case ${OS} in
-    rhel7|centos7) ;;
+    rhel7|centos7|rhel8|rhel9) ;;
     *) echo "Imagestream testing not supported for $OS environment." ; return 0 ;;
   esac
   local tag="-el7"
   if [ "${OS}" == "rhel8" ]; then
     tag="-el8"
+  elif [ "${OS}" == "rhel9" ]; then
+    tag="-el9"
   fi
-  ct_os_test_image_stream_template "${THISDIR}/../imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/../examples/redis-ephemeral-template.json" redis "-p REDIS_VERSION=${VERSION}${tag}"
+  ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/examples/redis-ephemeral-template.json" redis "-p REDIS_VERSION=${VERSION}${tag}"
 }
 
 # vim: set tabstop=2:shiftwidth=2:expandtab:
