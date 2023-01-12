@@ -28,10 +28,6 @@ run_doc_test
 THISDIR=$(dirname ${BASH_SOURCE[0]})
 source "${THISDIR}"/test-lib.sh
 
-CID_FILE_DIR=$(mktemp --suffix=redis_test_cidfiles -d)
-
-ct_enable_cleanup
-
 check_result() {
   local result="$1"
   if [[ "$result" != "0" ]]; then
@@ -303,5 +299,6 @@ function run_tests_no_root_altuid() {
   DOCKER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
 }
 
-TEST_SUMMARY=''
+ct_init
+
 TEST_SET=${TESTS:-$TEST_LIST} ct_run_tests_from_testset "redis_tests"
