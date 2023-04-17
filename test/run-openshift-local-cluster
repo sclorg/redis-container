@@ -57,7 +57,7 @@ function test_redis_pure_image() {
 
   ct_os_new_project
   # Create a specific imagestream tag for the image so that oc cannot use anything else
-  ct_os_upload_image "${image_name}" "$image_name_no_namespace"
+  ct_os_upload_image "v3" "${image_name}" "$image_name_no_namespace"
 
   ct_os_deploy_pure_image "$image_name_no_namespace" \
                           --name "${service_name}" \
@@ -75,7 +75,7 @@ function test_redis_template() {
   local service_name="${image_name_no_namespace%%:*}-testing"
 
   ct_os_new_project
-  ct_os_upload_image "${image_name}" "redis:$VERSION"
+  ct_os_upload_image "v3" "${image_name}" "redis:$VERSION"
 
   ct_os_deploy_template_image "$THISDIR/redis-ephemeral-template.json" \
                               NAMESPACE="$(oc project -q)" \
