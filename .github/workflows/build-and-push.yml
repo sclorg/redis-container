@@ -14,50 +14,55 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile_path: "6"
-            dockerfile: "Dockerfile"
+          - dockerfile: "6/Dockerfile"
             registry_namespace: "centos7"
             tag: "centos7"
-            suffix: "centos7"            
+            image_name: "redis-6-centos7"
             quayio_username: "QUAY_IMAGE_BUILDER_USERNAME"
             quayio_token: "QUAY_IMAGE_BUILDER_TOKEN"
-          - dockerfile_path: "6"
-            dockerfile: "Dockerfile.c9s"
+            docker_context: "6"
+
+          - dockerfile: "6/Dockerfile.c9s"
             registry_namespace: "sclorg"
             tag: "c9s"
-            suffix: "c9s"            
+            image_name: "redis-6-c9s"
             quayio_username: "QUAY_IMAGE_SCLORG_BUILDER_USERNAME"
             quayio_token: "QUAY_IMAGE_SCLORG_BUILDER_TOKEN"
-          - dockerfile_path: "6"
-            dockerfile: "Dockerfile.fedora"
+            docker_context: "6"
+
+          - dockerfile: "6/Dockerfile.fedora"
             registry_namespace: "fedora"
             tag: "fedora"
             quayio_username: "QUAY_IMAGE_FEDORA_BUILDER_USERNAME"
             quayio_token: "QUAY_IMAGE_FEDORA_BUILDER_TOKEN"
-           - dockerfile_path: "7"
-            dockerfile: "Dockerfile.fedora"
+            image_name: "redis-6"
+            docker_context: "6"
+
+          - dockerfile: "7/Dockerfile.fedora"
             registry_namespace: "fedora"
             tag: "fedora"
             quayio_username: "QUAY_IMAGE_FEDORA_BUILDER_USERNAME"
             quayio_token: "QUAY_IMAGE_FEDORA_BUILDER_TOKEN"
-          - dockerfile_path: "6"
-            dockerfile: "Dockerfile.c8s"
+            image_name: "redis-7"
+            docker_context: "7"
+
+          - dockerfile: "6/Dockerfile.c8s"
             registry_namespace: "sclorg"
             tag: "c8s"
-            suffix: "c8s"
+            image_name: "redis-6-c8s"
             quayio_username: "QUAY_IMAGE_SCLORG_BUILDER_USERNAME"
             quayio_token: "QUAY_IMAGE_SCLORG_BUILDER_TOKEN"
+            docker_context: "6"
 
     steps:
       - name: Build and push to quay.io registry
-        uses: sclorg/build-and-push-action@v2
+        uses: sclorg/build-and-push-action@v4
         with:
           registry: "quay.io"
           registry_namespace: ${{ matrix.registry_namespace }}
           registry_username: ${{ secrets[matrix.quayio_username] }}
           registry_token: ${{ secrets[matrix.quayio_token] }}
           dockerfile: ${{ matrix.dockerfile }}
-          docker_context: ${{ matrix.dockerfile_path }}
-          dockerfile_path: ${{ matrix.dockerfile_path }}
+          docker_context: ${{ matrix.docker_context }}
           tag: ${{ matrix.tag }}
-          suffix: ${{ matrix.suffix }}
+          image_name: ${{ matrix.image_name }}
