@@ -1,0 +1,19 @@
+#!/bin/bash
+
+source ${CONTAINER_SCRIPTS_PATH}/common.sh
+set -eu
+
+# setup directory for data
+chown -R redis:0 "${HOME}" "${REDIS_CONF}"
+restorecon -R "${HOME}" "${REDIS_CONF}"
+
+# Loosen permission bits for group to avoid problems running container with
+# arbitrary UID
+# When only specifying user, group is 0, that's why /var/lib/redis must have
+# owner redis.0; that allows to avoid a+rwx for this dir
+chmod 0770 "${HOME}" "${REDIS_DATADIR}"
+chmod 0660 "${REDIS_CONF}"
+
+# adjust config with changes we do every-time
+clear_config
+envsubst < ${CONTAINER_SCRIPTS_PATH}/base.conf.template >> "${REDIS_CONF}"
