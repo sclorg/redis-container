@@ -1,1 +1,0 @@
-root/usr/share/container-scripts/redis/README.md
