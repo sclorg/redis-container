@@ -22,14 +22,6 @@ jobs:
             quayio_token: "QUAY_IMAGE_SCLORG_BUILDER_TOKEN"
             docker_context: "6"
 
-          - dockerfile: "6/Dockerfile.fedora"
-            registry_namespace: "fedora"
-            tag: "fedora"
-            quayio_username: "QUAY_IMAGE_FEDORA_BUILDER_USERNAME"
-            quayio_token: "QUAY_IMAGE_FEDORA_BUILDER_TOKEN"
-            image_name: "redis-6"
-            docker_context: "6"
-
           - dockerfile: "7/Dockerfile.fedora"
             registry_namespace: "fedora"
             tag: "fedora"
