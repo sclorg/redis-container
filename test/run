@@ -23,6 +23,8 @@ run_tests_no_pass_altuid
 run_tests_no_root_altuid
 run_change_password_test
 run_doc_test
+run_bind_address_test
+run_no_bind_address_test
 "
 
 THISDIR=$(dirname ${BASH_SOURCE[0]})
@@ -141,6 +143,25 @@ function assert_local_access() {
   docker exec $(ct_get_cid "$id") bash -c 'redis-cli ping'
 }
 
+
+function assert_bind_address() {
+  local name="$1"
+  REDIS_CONF=/etc/redis.conf
+  local run_cmd="[ -f $REDIS_CONF ] && grep \"^bind 127.0.0.1\" $REDIS_CONF"
+
+  echo "Checking if bind is set to 127.0.0.1 in $REDIS_CONF."
+  docker exec $(get_cid "$name") /bin/bash -c "${run_cmd}"
+}
+
+function assert_no_bind_address() {
+  local name="$1"
+  REDIS_CONF=/etc/redis.conf
+  local run_cmd="[ -f $REDIS_CONF ] && ! grep \"^bind 127.0.0.1\" $REDIS_CONF"
+
+  echo "Checking if bind is not set in $REDIS_CONF."
+  docker exec $(get_cid "$name") /bin/bash -c "${run_cmd}"
+}
+
 # Make sure the invocation of docker run fails.
 function assert_container_creation_fails() {
 
@@ -212,15 +233,27 @@ function run_tests() {
   create_container $name $envs
   ret=$?
   ct_check_testcase_result $ret
-  test_connection "$name" "$PASS"
-  ret=$?
-  ct_check_testcase_result $ret
   # Only check version on rhel/centos builds
   if [ "$OS" != "fedora" ]; then
     echo "  Testing scl usage"
-    test_scl_usage $name 'redis-server --version' "$VERSION"
+    test_scl_usage "$name" 'redis-server --version' "$VERSION"
     ct_check_testcase_result $?
   fi
+  if [ "$name" == "bind_address_test" ]; then
+    echo "   Testing bind_address test"
+    assert_bind_address "$name"
+    ct_check_testcase_result $?
+    # Quit test suite. redis container will not response. bind is set to localhost
+    return
+  fi
+  if [ "$name" == "no_bind_address_test" ]; then
+    echo "   Testing no bind_address test"
+    assert_no_bind_address "$name"
+    ct_check_testcase_result $?
+  fi
+  test_connection "$name" "$PASS"
+  ret=$?
+  ct_check_testcase_result $ret
   echo "  Testing login accesses"
   local container_ip
   container_ip=$(ct_get_cip $name)
@@ -262,6 +295,14 @@ function run_tests_no_pass_altuid() {
 function run_tests_no_root_altuid() {
   # Test with arbitrary uid for the container with password
   DOCKER_ARGS="-u 12345" PASS=pass run_tests no_root_altuid
+}
+
+function run_bind_address_test() {
+  DOCKER_ARGS="-e BIND_ADDRESS=127.0.0.1" run_tests bind_address_test
+}
+
+function run_no_bind_address_test() {
+  run_tests no_bind_address_test
 }
 
 ct_init
