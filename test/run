@@ -112,7 +112,7 @@ function run_change_password_test() {
   ct_check_testcase_result $?
   # The old password should not work anymore
   container_ip="$(ct_get_cip testpass2)"
-  connection_works "$container_ip" bar
+  ! connection_works "$container_ip" foo
   ct_check_testcase_result $?
 }
 
