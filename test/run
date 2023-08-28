@@ -86,8 +86,8 @@ function create_container() {
   cidfile="$CID_FILE_DIR/$name"
   # create container with a cidfile in a directory for cleanup
   local container_id
-  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
-  container_id="$(docker run ${DOCKER_ARGS:-} --cidfile $cidfile -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
+  [ "${DEBUG:-0}" -eq 1 ] && echo "DEBUG: docker run ${DOCKER_ARGS:-} --cidfile \"$cidfile\" -d \"$@\" $IMAGE_NAME ${CONTAINER_ARGS:-}" >&2
+  container_id="$(docker run ${DOCKER_ARGS:-} --cidfile "$cidfile" -d "$@" $IMAGE_NAME ${CONTAINER_ARGS:-})"
   [ "${DEBUG:-0}" -eq 1 ] && echo "Created container $container_id"
   [ x"$container_id" == "x" ] && return 1 || return 0
 }
