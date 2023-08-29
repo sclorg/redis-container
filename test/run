@@ -146,20 +146,18 @@ function assert_local_access() {
 
 function assert_bind_address() {
   local name="$1"
-  REDIS_CONF=/etc/redis.conf
-  local run_cmd="[ -f $REDIS_CONF ] && grep \"^bind 127.0.0.1\" $REDIS_CONF"
+  local run_cmd="[ -f \${REDIS_CONF} ] && grep \"^bind 127.0.0.1\" \${REDIS_CONF}"
 
-  echo "Checking if bind is set to 127.0.0.1 in $REDIS_CONF."
-  docker exec $(get_cid "$name") /bin/bash -c "${run_cmd}"
+  echo "Checking if bind is set to 127.0.0.1 in redis.conf file."
+  docker exec $(ct_get_cid "$name") /bin/bash -c "${run_cmd}"
 }
 
 function assert_no_bind_address() {
   local name="$1"
-  REDIS_CONF=/etc/redis.conf
-  local run_cmd="[ -f $REDIS_CONF ] && ! grep \"^bind 127.0.0.1\" $REDIS_CONF"
+  local run_cmd="[ -f \${REDIS_CONF} ] && ! grep \"^bind 127.0.0.1\" \${REDIS_CONF}"
 
-  echo "Checking if bind is not set in $REDIS_CONF."
-  docker exec $(get_cid "$name") /bin/bash -c "${run_cmd}"
+  echo "Checking if bind is not set in redis.conf file."
+  docker exec $(ct_get_cid "$name") /bin/bash -c "${run_cmd}"
 }
 
 # Make sure the invocation of docker run fails.
