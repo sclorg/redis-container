@@ -24,3 +24,11 @@ function clear_config() {
       -e "/^protected-mode/s/yes/no/" \
       -i "${REDIS_CONF}"
 }
+
+function setup_bind_address() {
+  # Function sets bind
+  if [[ -v BIND_ADDRESS ]]; then
+    log_info "Configuring redis to listen on $BIND_ADDRESS only ..."
+    echo "bind $BIND_ADDRESS" >> "${REDIS_CONF}"
+  fi
+}

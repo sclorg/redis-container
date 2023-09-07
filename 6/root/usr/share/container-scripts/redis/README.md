@@ -57,6 +57,9 @@ Environment variables and volumes
 **`REDIS_PASSWORD`**  
        Password for the server access
 
+**`BIND_ADDRESS`**
+       IP address for the server to listen on
+
 
 You can also set the following mount points by passing the `-v /host:/container:Z` flag to podman.
 
