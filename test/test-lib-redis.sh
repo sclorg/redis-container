@@ -38,4 +38,12 @@ function test_redis_imagestream() {
   ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/examples/redis-ephemeral-template.json" redis "-p REDIS_VERSION=${VERSION}${tag}"
 }
 
+function test_latest_imagestreams() {
+  info "Testing the latest version in imagestreams"
+  # Switch to root directory of a container
+  pushd "${THISDIR}/../.." >/dev/null
+  ct_check_latest_imagestreams
+  popd >/dev/null
+}
+
 # vim: set tabstop=2:shiftwidth=2:expandtab:

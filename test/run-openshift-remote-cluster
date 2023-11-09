@@ -15,6 +15,7 @@ source ${THISDIR}/test-lib-redis.sh
 TEST_LIST="\
 test_redis_integration
 test_redis_imagestream
+test_latest_imagestreams
 "
 
 trap ct_os_cleanup EXIT SIGINT
