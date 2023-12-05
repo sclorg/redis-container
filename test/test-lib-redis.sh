@@ -14,13 +14,22 @@ source "${THISDIR}/test-lib-remote-openshift.sh"
 
 function test_redis_integration() {
   local service_name=redis
-  ct_os_test_template_app_func "${IMAGE_NAME}" \
-                               "https://raw.githubusercontent.com/openshift/origin/master/examples/db-templates/redis-ephemeral-template.json" \
+  if [ "${OS}" == "rhel7" ]; then
+    namespace_image="rhscl/redis-${VERSION}-rhel7"
+  else
+    namespace_image="${OS}/redis-${VERSION}"
+  fi
+  TEMPLATES="redis-ephemeral-template.json
+  redis-persistent-template.json"
+  for template in $TEMPLATES; do
+    ct_os_test_template_app_func "${IMAGE_NAME}" \
+                               "${THISDIR}/examples/${template}" \
                                "${service_name}" \
-                               "ct_os_check_cmd_internal '<SAME_IMAGE>' '${service_name}-testing' 'timeout 15 redis-cli -h <IP> -a testp ping' 'PONG'" \
+                               "ct_os_check_cmd_internal 'registry.redhat.io/${namespace_image}' '${service_name}-testing' 'timeout 15 redis-cli -h <IP> -a testp ping' 'PONG'" \
                                "-p REDIS_VERSION=${VERSION} \
                                 -p DATABASE_SERVICE_NAME="${service_name}-testing" \
                                 -p REDIS_PASSWORD=testp"
+  done
 }
 
 # Check the imagestream
@@ -35,7 +44,11 @@ function test_redis_imagestream() {
   elif [ "${OS}" == "rhel9" ]; then
     tag="-el9"
   fi
-  ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/examples/redis-ephemeral-template.json" redis "-p REDIS_VERSION=${VERSION}${tag}"
+  TEMPLATES="redis-ephemeral-template.json
+  redis-persistent-template.json"
+  for template in $TEMPLATES; do
+    ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/examples/${template}" redis "-p REDIS_VERSION=${VERSION}${tag}"
+  done
 }
 
 function test_latest_imagestreams() {
