@@ -4,7 +4,6 @@ Redis container image
 [![Build and push images to Quay.io registry](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml)
 
 Images available on Quay are:
-* CentOS 7 [redis-6](https://quay.io/repository/centos7/redis-6-centos7)
 * CentOS Stream 8 [redis-6](https://quay.io/repository/sclorg/redis-6-c8s)
 * CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
 * Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
@@ -31,7 +30,6 @@ RHEL versions currently supported are:
 * RHEL9
 
 CentOS versions currently supported are:
-* CentOS7
 * CentOS Stream 8
 * CentOS Stream 9
 
@@ -58,12 +56,12 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ make build TARGET=rhel7 VERSIONS=6
     ```
 
-*  **CentOS based image**
+*  **CentOS Stream based image**
 
-    This image is available on DockerHub. To download it run:
+    This image is available on quay.io. To download it run:
 
     ```
-    $ podman pull quay.io/centos7/redis-6-centos7
+    $ podman pull quay.io/sclorg/redis-7-c9s
     ```
 
     To build a Redis image from scratch run:
@@ -72,7 +70,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=centos7 VERSIONS=6
+    $ make build TARGET=c9s VERSIONS=7
     ```
 
 Note: while the installation steps are calling `podman`, you can replace any such calls by `docker` with the same arguments.
@@ -102,12 +100,12 @@ Users can choose between testing a Redis test application based on a RHEL or Cen
     $ make test TARGET=rhel7 VERSIONS=6
     ```
 
-*  **CentOS based image**
+*  **CentOS Stream based image**
 
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=centos7 VERSIONS=6
+    $ make test TARGET=c9s VERSIONS=7
     ```
 
 **Notice: By omitting the `VERSIONS` parameter, the build/test action will be performed
