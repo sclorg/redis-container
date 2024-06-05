@@ -4,7 +4,6 @@ Redis container image
 [![Build and push images to Quay.io registry](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/sclorg/redis-container/actions/workflows/build-and-push.yml)
 
 Images available on Quay are:
-* CentOS Stream 8 [redis-6](https://quay.io/repository/sclorg/redis-6-c8s)
 * CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
 * Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
 * Fedora [redis-7](https://quay.io/repository/fedora/redis-7)
@@ -30,7 +29,6 @@ RHEL versions currently supported are:
 * RHEL9
 
 CentOS versions currently supported are:
-* CentOS Stream 8
 * CentOS Stream 9
 
 

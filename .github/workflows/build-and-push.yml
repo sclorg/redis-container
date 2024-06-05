@@ -30,14 +30,6 @@ jobs:
             image_name: "redis-7"
             docker_context: "7"
 
-          - dockerfile: "6/Dockerfile.c8s"
-            registry_namespace: "sclorg"
-            tag: "c8s"
-            image_name: "redis-6-c8s"
-            quayio_username: "QUAY_IMAGE_SCLORG_BUILDER_USERNAME"
-            quayio_token: "QUAY_IMAGE_SCLORG_BUILDER_TOKEN"
-            docker_context: "6"
-
           - dockerfile: "7/Dockerfile.c9s"
             registry_namespace: "sclorg"
             tag: "c9s"
