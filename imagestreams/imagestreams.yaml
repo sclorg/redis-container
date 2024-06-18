@@ -1,0 +1,33 @@
+---
+- name: redis
+  pretty_name: Redis
+  sample_repo: ""
+  category: database
+  description: >-
+    Provides a Redis APP_VERSION database on DISTRO_NAME. For more information
+    about using this database image, including OpenShift considerations, see 
+    https://github.com/sclorg/redis-container/tree/master/APP_VERSION/README.md.
+  imagestream_files:
+  - filename: redis-centos.json
+    latest: "6-el9"
+    distros:
+      - name: CentOS Stream 9
+        app_versions: [6, 7]
+
+  - filename: redis-rhel.json
+    latest: "6-el8"
+    distros:
+      - name: RHEL 8
+        app_versions: [6]
+
+      - name: RHEL 9
+        app_versions: [7]
+
+  - filename: redis-rhel-aarch64.json
+    latest: "6-el8"
+    distros:
+      - name: RHEL 8
+        app_versions: [6]
+
+      - name: RHEL 9
+        app_versions: [7]
