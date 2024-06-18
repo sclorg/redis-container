@@ -21,7 +21,7 @@
         app_versions: [6]
 
       - name: RHEL 9
-        app_versions: [7]
+        app_versions: [6, 7]
 
   - filename: redis-rhel-aarch64.json
     latest: "6-el8"
@@ -30,4 +30,4 @@
         app_versions: [6]
 
       - name: RHEL 9
-        app_versions: [7]
+        app_versions: [6, 7]
