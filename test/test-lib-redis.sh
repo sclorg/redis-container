@@ -34,8 +34,8 @@ function test_redis_integration() {
 
 # Check the imagestream
 function test_redis_imagestream() {
-  if [ "${VERSION}" == "7" ]; then
-    echo "Skipping testing version. It is not generally available yet."
+  if [ "${VERSION}" == "7" ] && [ "${OS}" != "rhel9" ]; then
+    echo "Skipping testing version. It is not available for RHEL 7 and RHEL 8."
     return 0
   fi
   local tag="-el7"
