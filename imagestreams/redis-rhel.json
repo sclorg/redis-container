@@ -10,24 +10,6 @@
   "spec": {
     "tags": [
       {
-        "name": "6-el7",
-        "annotations": {
-          "openshift.io/display-name": "Redis 6 (RHEL 7)",
-          "openshift.io/provider-display-name": "Red Hat, Inc.",
-          "description": "Provides a Redis 6 database on RHEL 7. For more information about using this database image, including OpenShift considerations, see  https://github.com/sclorg/redis-container/tree/master/6/README.md.",
-          "iconClass": "icon-redis",
-          "tags": "database,redis",
-          "version": "6"
-        },
-        "from": {
-          "kind": "DockerImage",
-          "name": "registry.redhat.io/rhscl/redis-6-rhel7:latest"
-        },
-        "referencePolicy": {
-          "type": "Local"
-        }
-      },
-      {
         "name": "6-el8",
         "annotations": {
           "openshift.io/display-name": "Redis 6 (RHEL 8)",
