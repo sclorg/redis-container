@@ -24,7 +24,6 @@ Redis version currently provided are:
 * [redis-7](7)
 
 RHEL versions currently supported are:
-* RHEL7
 * RHEL8
 * RHEL9
 
@@ -37,11 +36,11 @@ Installation
 To build a Redis image, choose either the CentOS or RHEL based image:
 *  **RHEL based image**
 
-    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhscl/redis-6-rhel7).
+    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhel8/redis-6).
     To download it run:
 
     ```
-    $ podman pull registry.access.redhat.com/rhscl/redis-6-rhel7
+    $ podman pull registry.access.redhat.com/rhel8/redis-6
     ```
 
     To build a RHEL based Redis image, you need to run the build on a properly
@@ -51,7 +50,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=rhel7 VERSIONS=6
+    $ make build TARGET=rhel8 VERSIONS=6
     ```
 
 *  **CentOS Stream based image**
@@ -83,19 +82,22 @@ Usage
 For information about usage of Dockerfile for Redis 6,
 see [usage documentation](6).
 
+For information about usage of Dockerfile for Redis 7,
+see [usage documentation](7).
+
 Test
 ----
 Users can choose between testing a Redis test application based on a RHEL or CentOS image.
 
 *  **RHEL based image**
 
-    To test a RHEL7 based Redis image, you need to run the test on a properly
+    To test a RHEL8 based Redis image, you need to run the test on a properly
     subscribed RHEL machine.
 
     ```
     $ cd redis-container
     $ git submodule update --init
-    $ make test TARGET=rhel7 VERSIONS=6
+    $ make test TARGET=rhel8 VERSIONS=6
     ```
 
 *  **CentOS Stream based image**
