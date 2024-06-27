@@ -14,11 +14,7 @@ source "${THISDIR}/test-lib-remote-openshift.sh"
 
 function test_redis_integration() {
   local service_name=redis
-  if [ "${OS}" == "rhel7" ]; then
-    namespace_image="rhscl/redis-${VERSION}-rhel7"
-  else
-    namespace_image="${OS}/redis-${VERSION}"
-  fi
+  namespace_image="${OS}/redis-${VERSION}"
   TEMPLATES="redis-ephemeral-template.json
   redis-persistent-template.json"
   for template in $TEMPLATES; do
@@ -35,13 +31,11 @@ function test_redis_integration() {
 # Check the imagestream
 function test_redis_imagestream() {
   if [ "${VERSION}" == "7" ] && [ "${OS}" != "rhel9" ]; then
-    echo "Skipping testing version. It is not available for RHEL 7 and RHEL 8."
+    echo "Skipping testing version. It is not available for RHEL 8."
     return 0
   fi
-  local tag="-el7"
-  if [ "${OS}" == "rhel8" ]; then
-    tag="-el8"
-  elif [ "${OS}" == "rhel9" ]; then
+  tag="-el8"
+  if [ "${OS}" == "rhel9" ]; then
     tag="-el9"
   fi
   TEMPLATES="redis-ephemeral-template.json

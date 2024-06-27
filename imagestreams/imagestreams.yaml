@@ -17,9 +17,6 @@
   - filename: redis-rhel.json
     latest: "6-el8"
     distros:
-      - name: RHEL 7
-        app_versions: [6]
-
       - name: RHEL 8
         app_versions: [6]
 
@@ -29,9 +26,6 @@
   - filename: redis-rhel-aarch64.json
     latest: "6-el8"
     distros:
-      - name: RHEL 7
-        app_versions: [6]
-
       - name: RHEL 8
         app_versions: [6]
 
