@@ -5,6 +5,7 @@ Redis container image
 
 Images available on Quay are:
 * CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
+* CentOS Stream 7 [redis-7](https://quay.io/repository/sclorg/redis-7-c9s)
 * Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
 * Fedora [redis-7](https://quay.io/repository/fedora/redis-7)
 
@@ -29,6 +30,7 @@ RHEL versions currently supported are:
 
 CentOS versions currently supported are:
 * CentOS Stream 9
+* CentOS Stream 10
 
 
 Installation
