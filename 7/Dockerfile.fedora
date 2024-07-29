@@ -7,10 +7,7 @@ FROM quay.io/fedora/s2i-core:38
 # Environment:
 #  * $REDIS_PASSWORD - Database password
 
-ENV NAME=redis \
-    VERSION=7
-
-ENV REDIS_VERSION=$VERSION \
+ENV REDIS_VERSION=7 \
     HOME=/var/lib/redis
 
 ENV SUMMARY="Redis in-memory data structure store, used as database, cache and message broker" \
@@ -24,14 +21,14 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
-      io.k8s.description="$SUMMARY" \
-      io.k8s.display-name="Redis 7" \
+      io.k8s.description="$DESCRIPTION" \
+      io.k8s.display-name="Redis $REDIS_VERSION" \
       io.openshift.expose-services="6379:redis" \
-      io.openshift.tags="database,redis,redis7" \
+      io.openshift.tags="database,redis,redis$REDIS_VERSION,redis-$REDIS_VERSION" \
       com.redhat.component="$NAME" \
-      name="fedora/$NAME-$VERSION" \
-      version="$VERSION" \
-      usage="docker run -d --name redis_database -p 6379:6379 quay.io/fedora/$NAME-$VERSION" \
+      name="fedora/$NAME-$REDIS_VERSION" \
+      version="$REDIS_VERSION" \
+      usage="podman run -d --name redis_database -p 6379:6379 quay.io/fedora/$NAME-$REDIS_VERSION" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
@@ -51,7 +48,7 @@ RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
     INSTALL_PKGS="redis" && \
     dnf install -y --setopt=tsflags=nodocs --nogpgcheck $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
-    dnf clean all && \
+    dnf -y clean all --enablerepo='*' && \
     redis-server --version | grep -qe "^Redis server v=$REDIS_VERSION\." && echo "Found VERSION $REDIS_VERSION" && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis && \
     [[ "$(id redis)" == "uid=1001(redis)"* ]]

@@ -1,4 +1,4 @@
-FROM quay.io/sclorg/s2i-core-c9s:c9s
+FROM quay.io/sclorg/s2i-core-c10s:c10s
 
 # Redis image based on Software Collections packages
 #
@@ -26,10 +26,10 @@ LABEL summary="$SUMMARY" \
       io.openshift.expose-services="6379:redis" \
       io.openshift.tags="database,redis,redis$REDIS_VERSION,redis-$REDIS_VERSION" \
       com.redhat.component="redis-$REDIS_VERSION-container" \
-      name="sclorg/redis-$REDIS_VERSION-c9s" \
-      version="1" \
+      name="sclorg/redis-$REDIS_VERSION-c10s" \
+      version="$REDIS_VERSION" \
       com.redhat.license_terms="https://www.redhat.com/en/about/red-hat-end-user-license-agreements#rhel" \
-      usage="podman run -d --name redis_database -p 6379:6379 quay.io/sclorg/redis-$REDIS_VERSION-c9s" \
+      usage="podman run -d --name redis_database -p 6379:6379 quay.io/sclorg/redis-$REDIS_VERSION-c10s" \
       maintainer="SoftwareCollections.org <sclorg@redhat.com>"
 
 EXPOSE 6379
@@ -45,11 +45,10 @@ EXPOSE 6379
 RUN getent group  redis &> /dev/null || groupadd -r redis &> /dev/null && \
     usermod -l redis -aG redis -c 'Redis Server' default &> /dev/null && \
 # Install gettext for envsubst command
-    yum -y module enable redis:$REDIS_VERSION && \
-    INSTALL_PKGS="policycoreutils redis" && \
-    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    INSTALL_PKGS="policycoreutils gettext redis" && \
+    dnf install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
-    yum -y clean all --enablerepo='*' && \
+    dnf -y clean all --enablerepo='*' && \
     redis-server --version | grep -qe "^Redis server v=$REDIS_VERSION\." && echo "Found VERSION $REDIS_VERSION" && \
     mkdir -p /var/lib/redis/data && chown -R redis.0 /var/lib/redis && \
     [[ "$(id redis)" == "uid=1001(redis)"* ]]
