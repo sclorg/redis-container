@@ -23,9 +23,9 @@ TAG = TAGS.get(OS, None)
 class TestHelmRedisPersistent:
 
     def setup_method(self):
-        package_name = "redis-persistent"
+        package_name = "redhat-redis-persistent"
         path = test_dir
-        self.hc_api = HelmChartsAPI(path=path, package_name=package_name, tarball_dir=test_dir)
+        self.hc_api = HelmChartsAPI(path=path, package_name=package_name, tarball_dir=test_dir, shared_cluster=True)
         self.hc_api.clone_helm_chart_repo(
             repo_url="https://github.com/sclorg/helm-charts", repo_name="helm-charts",
             subdir="charts/redhat"
@@ -35,10 +35,10 @@ class TestHelmRedisPersistent:
         self.hc_api.delete_project()
 
     def test_package_persistent_by_helm_chart_test(self):
-        self.hc_api.package_name = "redis-imagestreams"
+        self.hc_api.package_name = "redhat-redis-imagestreams"
         self.hc_api.helm_package()
         assert self.hc_api.helm_installation()
-        self.hc_api.package_name = "redis-persistent"
+        self.hc_api.package_name = "redhat-redis-persistent"
         self.hc_api.helm_package()
         assert self.hc_api.helm_installation(
             values={
