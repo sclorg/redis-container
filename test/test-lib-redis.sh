@@ -41,7 +41,7 @@ function test_redis_imagestream() {
   TEMPLATES="redis-ephemeral-template.json
   redis-persistent-template.json"
   for template in $TEMPLATES; do
-    ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS%[0-9]*}.json" "${THISDIR}/examples/${template}" redis "-p REDIS_VERSION=${VERSION}${tag}"
+    ct_os_test_image_stream_template "${THISDIR}/imagestreams/redis-${OS//[0-9]/}.json" "${THISDIR}/examples/${template}" redis "-p REDIS_VERSION=${VERSION}${tag}"
   done
 }
 
