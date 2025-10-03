@@ -5,11 +5,11 @@ Redis container image
 
 Images available on Quay are:
 * CentOS Stream 9 [redis-6](https://quay.io/repository/sclorg/redis-6-c9s)
-* Fedora [redis-6](https://quay.io/repository/fedora/redis-6)
+* CentOS Stream 9 [redis-7](https://quay.io/repository/sclorg/redis-7-c9s)
 * Fedora [redis-7](https://quay.io/repository/fedora/redis-7)
 
 This repository contains Dockerfiles for Redis container image.
-Users can choose between RHEL, Fedora and CentOS based images.
+Users can choose between RHEL, Fedora and CentOS Stream based images.
 
 For more information about contributing, see
 [the Contribution Guidelines](https://github.com/sclorg/welcome/blob/master/contribution.md).
@@ -27,20 +27,20 @@ RHEL versions currently supported are:
 * RHEL8
 * RHEL9
 
-CentOS versions currently supported are:
+CentOS Stream versions currently supported are:
 * CentOS Stream 9
 
 
 Installation
 ------------
-To build a Redis image, choose either the CentOS or RHEL based image:
+To build a Redis image, choose either the CentOS Stream or RHEL based image:
 *  **RHEL based image**
 
-    These images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/#/registry.access.redhat.com/rhel8/redis-6).
+    These images are available in the [Red Hat Container Catalog](https://catalog.redhat.com/en/search?searchType=containers).
     To download it run:
 
     ```
-    $ podman pull registry.access.redhat.com/rhel8/redis-6
+    $ podman pull registry.access.redhat.com/rhel9/redis-7
     ```
 
     To build a RHEL based Redis image, you need to run the build on a properly
@@ -50,7 +50,7 @@ To build a Redis image, choose either the CentOS or RHEL based image:
     $ git clone --recursive https://github.com/sclorg/redis-container.git
     $ cd redis-container
     $ git submodule update --init
-    $ make build TARGET=rhel8 VERSIONS=6
+    $ make build TARGET=rhel9 VERSIONS=7
     ```
 
 *  **CentOS Stream based image**
@@ -87,7 +87,7 @@ see [usage documentation](7).
 
 Test
 ----
-Users can choose between testing a Redis test application based on a RHEL or CentOS image.
+Users can choose between testing a Redis test application based on a RHEL or CentOS Stream image.
 
 *  **RHEL based image**
 

@@ -25,12 +25,12 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 Usage
 -----
 
-For this, we will assume that you are using the `rhel8/redis-7` image.
+For this, we will assume that you are using the `rhel9/redis-7` image.
 If you want to set only the mandatory environment variables and not store
 the database in a host directory, execute the following command:
 
 ```
-$ podman run -d --name redis_database -p 6379:6379 rhel8/redis-7
+$ podman run -d --name redis_database -p 6379:6379 rhel9/redis-7
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
@@ -43,7 +43,7 @@ For protecting Redis data by a password, pass `REDIS_PASSWORD` environment varia
 to the container like this:
 
 ```
-$ podman run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel8/redis-7
+$ podman run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel9/redis-7
 ```
 
 **Warning: since Redis is pretty fast an outside user can try up to
