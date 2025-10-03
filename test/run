@@ -231,7 +231,7 @@ function run_tests() {
   create_container $name $envs
   ret=$?
   ct_check_testcase_result $ret
-  # Only check version on rhel/centos builds
+  # Only check version on rhel/centos stream builds
   if [ "$OS" != "fedora" ]; then
     echo "  Testing scl usage"
     test_scl_usage "$name" 'redis-server --version' "$VERSION"

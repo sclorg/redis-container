@@ -2,10 +2,9 @@ Redis 6 in-memory data structure store container image
 ======================================================
 
 This container image includes Redis 6 in-memory data structure store for OpenShift and general usage.
-Users can choose between RHEL, CentOS and Fedora based images.
+Users can choose between RHEL, CentOS Stream and Fedora based images.
 The RHEL images are available in the [Red Hat Container Catalog](https://access.redhat.com/containers/),
-the CentOS Stream images are available on [Quay.io](https://quay.io/organization/sclorg),
-and the Fedora images are available in [Fedora Registry](https://quay.io/organization/fedora).
+and the CentOS Stream images are available on [Quay.io](https://quay.io/organization/sclorg).
 The resulting image can be run using [podman](https://github.com/containers/libpod).
 
 Note: while the examples in this README are calling `podman`, you can replace any such calls by `docker` with the same arguments
@@ -25,12 +24,12 @@ it either by dumping the dataset to disk every once in a while, or by appending 
 Usage
 -----
 
-For this, we will assume that you are using the `rhel8/redis-6` image.
+For this, we will assume that you are using the `rhel9/redis-6` image.
 If you want to set only the mandatory environment variables and not store
 the database in a host directory, execute the following command:
 
 ```
-$ podman run -d --name redis_database -p 6379:6379 rhel8/redis-6
+$ podman run -d --name redis_database -p 6379:6379 rhel9/redis-6
 ```
 
 This will create a container named `redis_database`. Port 6379 will be exposed and mapped
@@ -43,7 +42,7 @@ For protecting Redis data by a password, pass `REDIS_PASSWORD` environment varia
 to the container like this:
 
 ```
-$ podman run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel8/redis-6
+$ podman run -d --name redis_database -e REDIS_PASSWORD=strongpassword rhel9/redis-6
 ```
 
 **Warning: since Redis is pretty fast an outside user can try up to
@@ -85,4 +84,4 @@ Dockerfile and other sources for this container image are available on
 https://github.com/sclorg/redis-container.
 In that repository you also can find another versions of Python environment Dockerfiles.
 Dockerfile for RHEL8 it's `Dockerfile.rhel8`, for RHEL9 it's `Dockerfile.rhel9`,
-for CentOS Stream 9 it's `Dockerfile.c9s` and the Fedora Dockerfile is called Dockerfile.fedora.
+and for CentOS Stream 9 it's `Dockerfile.c9s`.
