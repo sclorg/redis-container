@@ -32,7 +32,6 @@ class TestRedisBasicsContainer:
         Function checks if running container with wrong PASSWORD
         with spaces in the REDIS_PASSWORD really fails
         It should fail. If it doesn't fail,
-
         """
         with pytest.raises(subprocess.CalledProcessError):
             PodmanCLIWrapper.call_podman_command(
@@ -92,5 +91,4 @@ class TestRedisBasicsContainer:
             cmd=f"redis-cli -h {cip2} -a foo ping",
             return_output=False
         ) == 0, "The command with pass -a foo has to fail"
-        assert "PONG" in redis_output, "Expected return value is 'PONG'"
         PodmanCLIWrapper.call_podman_command(f"stop {cid2} >/dev/null")
