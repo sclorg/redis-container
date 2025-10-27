@@ -11,8 +11,14 @@ from container_ci_suite.utils import check_variables
 if not check_variables():
     sys.exit(1)
 
+TAGS = {
+    "rhel8": "-el8",
+    "rhel9": "-el9",
+    "rhel10": "-el10",
+}
+
 Vars = namedtuple(
-    "Vars", ["OS", "VERSION", "IMAGE_NAME", "TEST_DIR"]
+    "Vars", ["OS", "VERSION", "IMAGE_NAME", "TEST_DIR", "TAG"]
 )
 VERSION = os.getenv("VERSION")
 OS = os.getenv("TARGET").lower()
@@ -22,6 +28,7 @@ VARS = Vars(
     VERSION=VERSION,
     IMAGE_NAME=os.getenv("IMAGE_NAME"),
     TEST_DIR=Path(__file__).parent.absolute(),
+    TAG=TAGS.get(OS),
 )
 
 
