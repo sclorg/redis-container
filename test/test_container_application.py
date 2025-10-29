@@ -29,7 +29,7 @@ class TestRedisApplicationContainer:
         and with different user and password
         """
         container_arg = f"-e REDIS_PASSWORD={password}" if password != "" else ""
-        container_arg = f"{container_arg} -u 12345" if "altuid" in test_name else ""
+        container_arg = f"{container_arg} -u 12345" if "altuid" in test_name else container_arg
         assert self.s2i_app.create_container(
             cid_file_name=test_name,
             container_args=f"--user=100001 {container_arg}"
@@ -44,17 +44,15 @@ class TestRedisApplicationContainer:
         # Test with redis-cli returns 'PONG' from the different container
         redis_output = PodmanCLIWrapper.podman_run_command_and_remove(
             cid_file_name=VARS.IMAGE_NAME,
-            cmd=f"{redis_cmd} ping",
-            return_output=True
-        )
+            cmd=f"{redis_cmd} ping"
+        ).strip()
         assert "PONG" in redis_output, f"The command {redis_cmd} should return PONG"
         # The password '_foo' has to fail. It was not initiated
-        redis_output = PodmanCLIWrapper.podman_run_command_and_remove(
+        assert not PodmanCLIWrapper.podman_run_command_and_remove(
             cid_file_name=VARS.IMAGE_NAME,
             cmd=f"{redis_cmd}_foo ping",
             return_output=False
-        )
-        assert redis_output == 0, "The command -e REDIS_PASSWORD=\"pass_foo\" has to fail"
+        ), "The command -e REDIS_PASSWORD=\"pass_foo\" has to fail"
         # The redis-cli should return PONG from the running container
         redis_output = PodmanCLIWrapper.podman_exec_shell_command(
             cid_file_name=cid,
