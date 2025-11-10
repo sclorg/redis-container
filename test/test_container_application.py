@@ -28,7 +28,7 @@ class TestRedisApplicationContainer:
         Like 'No root' user with password, 'w/o password'
         and with different user and password
         """
-        container_arg = f"-e REDIS_PASSWORD={password}" if password != "" else ""
+        container_arg = f"-e REDIS_PASSWORD={password}" if password else ""
         container_arg = f"{container_arg} -u 12345" if "altuid" in test_name else container_arg
         assert self.s2i_app.create_container(
             cid_file_name=test_name,
