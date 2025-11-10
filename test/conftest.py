@@ -28,8 +28,3 @@ VARS = Vars(
     TEST_DIR=Path(__file__).parent.absolute(),
     TAG=TAGS.get(OS),
 )
-
-
-def skip_redis():
-    if VARS.OS in ["rhel9", "rhel10"]:
-        pytest.skip("Not supported in RHEL9 or RHEL10 at all.")
