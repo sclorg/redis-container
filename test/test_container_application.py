@@ -50,10 +50,14 @@ class TestRedisApplicationContainer:
         ).strip()
         assert "PONG" in redis_output, f"The command {redis_cmd} should return PONG"
         # The password '_foo' has to fail. It was not initiated
-        assert "PONG" not in PodmanCLIWrapper.podman_run_command_and_remove(
+        redis_output = PodmanCLIWrapper.podman_run_command_and_remove(
             cid_file_name=VARS.IMAGE_NAME,
             cmd=f"{redis_cmd}_foo ping",
-        ), 'The command -e REDIS_PASSWORD="pass_foo" has to fail'
+            ignore_error=True,
+        )
+        assert "PONG" not in redis_output, (
+            'The command -e REDIS_PASSWORD="pass_foo" has to fail'
+        )
         # The redis-cli should return PONG from the running container
         redis_output = PodmanCLIWrapper.podman_exec_shell_command(
             cid_file_name=cid, cmd=f"{redis_cmd} ping"
