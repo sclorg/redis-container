@@ -39,7 +39,7 @@ class TestRedisApplicationContainer:
         assert cid
         cip = self.s2i_app.get_cip(cid_file_name=test_name)
         assert cip
-        testing_password = f"-a {password}" if password != "" else ""
+        testing_password = f"-a {password}" if password else ""
         redis_cmd = f"redis-cli -h {cip} {testing_password}"
         # Test with redis-cli returns 'PONG' from the different container
         redis_output = PodmanCLIWrapper.podman_run_command_and_remove(
