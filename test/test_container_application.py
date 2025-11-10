@@ -65,7 +65,7 @@ class TestRedisApplicationContainer:
             cmd=f"{redis_cmd} set a 1",
             return_output=False
         ) == 0
-        # The redis-cli set value '2' to 2
+        # The redis-cli set value 'b' to 2
         assert PodmanCLIWrapper.podman_exec_shell_command(
             cid_file_name=cid,
             cmd=f"{redis_cmd} set b 2",
