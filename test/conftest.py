@@ -17,9 +17,7 @@ TAGS = {
     "rhel10": "-el10",
 }
 
-Vars = namedtuple(
-    "Vars", ["OS", "VERSION", "IMAGE_NAME", "TEST_DIR", "TAG"]
-)
+Vars = namedtuple("Vars", ["OS", "VERSION", "IMAGE_NAME", "TEST_DIR", "TAG"])
 VERSION = os.getenv("VERSION")
 OS = os.getenv("TARGET").lower()
 
@@ -32,6 +30,6 @@ VARS = Vars(
 )
 
 
-def skip_valkey_for_rhel9():
-    if VARS.OS == "rhel9":
-        pytest.skip("Not supported in RHEL9 yet.")
+def skip_redis():
+    if VARS.OS in ["rhel9", "rhel10"]:
+        pytest.skip("Not supported in RHEL9 or RHEL10 at all.")
