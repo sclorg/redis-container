@@ -113,7 +113,7 @@ class TestRedisApplicationContainer:
             ) == 0
             # Quit test suite. valkey container will not response. bind is set to localhost
         else:
-            # Check that REDIS_CONF really does contain 'bind 127.0.0.1'
+            # Check that REDIS_CONF really does NOT contain 'bind 127.0.0.1'
             assert not PodmanCLIWrapper.podman_exec_shell_command(
                 cid_file_name=cid,
                 cmd="grep \"^bind 127.0.0.1\" ${REDIS_CONF}",
