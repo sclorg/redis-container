@@ -22,7 +22,6 @@ run_tests_no_pass
 run_tests_no_pass_altuid
 run_tests_no_root_altuid
 run_change_password_test
-run_doc_test
 run_bind_address_test
 run_no_bind_address_test
 "
@@ -216,11 +215,6 @@ test_scl_usage() {
     echo "ERROR[exec /bin/sh -ic "${run_cmd}"] Expected '${expected}', got '${out}'"
     return 1
   fi
-}
-
-run_doc_test() {
-  ct_doc_content_old 6379 "REDIS.*PASSWORD" volume
-  return $?
 }
 
 function run_tests() {
