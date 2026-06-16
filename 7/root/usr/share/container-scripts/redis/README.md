@@ -21,6 +21,7 @@ or getting the member with highest ranking in a sorted set. In order to achieve 
 performance, Redis works with an in-memory dataset. Depending on your use case, you can persist
 it either by dumping the dataset to disk every once in a while, or by appending each command to a log.
 
+See [the Red Hat Enterprise Linux Application Streams Life Cycle page](https://access.redhat.com/support/policy/updates/rhel-app-streams-life-cycle) for information about support for this particular stream.
 
 Usage
 -----
